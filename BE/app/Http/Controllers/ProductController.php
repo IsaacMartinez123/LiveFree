@@ -57,12 +57,18 @@ class ProductController extends Controller
         }
 
         $product->update([
-            'name' => $request->name ?? $product->name,
-            'document' => $request->document ?? $product->document,
-            'phone' => $request->phone ?? $product->phone,
-            'email' => $request->email ?? $product->email,
-            'address' => $request->address ?? $product->address,
-            'city' => $request->city ?? $product->city,
+            'reference' => $request->reference,
+            'product_name' => $request->product_name,
+            'price' => $request->price,
+            'color' => $request->color,
+            'size_S' => $request->size_S ?? 0,
+            'size_M' => $request->size_M ?? 0,
+            'size_L' => $request->size_L ?? 0,
+            'size_XL' => $request->size_XL ?? 0,
+            'size_2XL' => $request->size_2XL ?? 0,
+            'size_3XL' => $request->size_3XL ?? 0,
+            'size_4XL' => $request->size_4XL ?? 0,
+            'status' => $request->status ?? 1, 
         ]);
 
         return response()->json(['message' => 'Producto actualizado correctamente', 'Producto' => $product]);

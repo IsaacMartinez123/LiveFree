@@ -10,9 +10,9 @@ export const loginUser = (email: string, password: string, navigate: NavigateFun
         const { token, user } = res.data;
 
         localStorage.setItem('token', token);
-                
+        localStorage.setItem('user', JSON.stringify(user));
         dispatch(loginSuccess(user));
-        
+
         navigate('/users');
     } catch (error: any) {
         dispatch(loginFailure(error.response?.data?.message || 'No se pudo iniciar sesión'));

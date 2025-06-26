@@ -8,11 +8,36 @@ import Users from './pages/users/Users';
 import Products from './pages/products/Products';
 import Sellers from './pages/users/Sellers';
 import Clients from './pages/users/Clients';
+import { useEffect, useState } from 'react';
+import { useAppDispatch } from './redux/hooks';
+import { loginSuccess } from './redux/auth/authSlice';
+
+function Loader() {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 border-4 border-purple-300 border-t-purple-700 rounded-full animate-spin"></div>
+        <span className="text-purple-700 font-semibold">Cargando...</span>
+      </div>
+    </div>
+  );
+}
 
 function App() {
+  const dispatch = useAppDispatch();
+  const [rehydrated, setRehydrated] = useState(false);
+
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (user) {
+      dispatch(loginSuccess(JSON.parse(user)));
+    }
+    setRehydrated(true);
+  }, [dispatch]);
+
+  if (!rehydrated) return <Loader />;
 
   return (
-
     <div>
       <Routes>
         <Route path="/" element={<Login />} />

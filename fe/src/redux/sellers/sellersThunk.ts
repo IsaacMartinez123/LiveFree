@@ -18,7 +18,6 @@ export const createSeller = createAsyncThunk(
     async (sellerData, thunkAPI) => {
         try {
             const response = await api.post('/sellers', sellerData);
-            console.log('Respuesta de creación de vendedor:', response.data);
             
             return response.data;
         } catch (error: any) {
@@ -36,7 +35,6 @@ export const updateSeller = createAsyncThunk(
         const { id, ...sellerData } = payload;
         try {
             const response = await api.put(`/sellers/${id}`, sellerData);
-            console.log('Respuesta de actualización de vendedor:', response.data);
             
             return response.data;
         } catch (error: any) {
