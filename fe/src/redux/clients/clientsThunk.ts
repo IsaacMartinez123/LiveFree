@@ -40,3 +40,15 @@ export const updateClient = createAsyncThunk(
         }
     }
 );
+
+export const deleteClient = createAsyncThunk(
+    'clients/deleteClient',
+    async (id: string | number, thunkAPI) => {
+        try {
+            await api.delete(`/clients/${id}`);
+            return id;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || 'Error al eliminar cliente');
+        }
+    }
+);

@@ -9,15 +9,16 @@ import {
 import { useMemo, useState } from 'react';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { fetchUsers } from '../../redux/users/usersThunk';
-import { ArrowCircleLeft, ArrowCircleRight, Edit } from 'iconsax-reactjs';
+import { fetchUsers, toggleUserStatus } from '../../redux/users/usersThunk';
+import { ArrowCircleLeft, ArrowCircleRight, Edit, Refresh } from 'iconsax-reactjs';
 import AddUser from '../../Components/sections/user/AddUser';
 
-type User = {
+export type User = {
     id: number;
     name: string;
     email: string;
     rol_id: string;
+    status: boolean;
 };
 
 export default function Users() {
@@ -28,25 +29,57 @@ export default function Users() {
 
     const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
 
+    const loggedUser = useAppSelector(state => state.auth.user);
 
     const columns = useMemo<ColumnDef<User>[]>(() => [
         { accessorKey: 'name', header: 'Nombre' },
         { accessorKey: 'email', header: 'Correo' },
         { accessorKey: 'rol_id', header: 'Rol' },
         {
+            accessorKey: 'status',
+            header: 'Estado',
+            cell: ({ getValue }) => {
+                const status = getValue() as boolean | number;
+                return (
+                    <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold
+                                ${status ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}
+                            `}
+                    >
+                        {status ? 'Activo' : 'Inactivo'}
+                    </span>
+                );
+            }
+        },
+        {
             id: 'actions',
             header: 'Acciones',
             cell: ({ row }) => (
-                <button
-                    onClick={() => {
-                        setSelectedUser(row.original);
-                        setIsModalOpen(true);
-                    }}
-                    className="text-sm text-blue-600 hover:underline"
-                >
-                    <Edit size="20" color="#7E22CE" />
-
-                </button>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => {
+                            setSelectedUser(row.original);
+                            setIsModalOpen(true);
+                        }}
+                        className="text-sm text-blue-600 hover:underline"
+                        title="Editar"
+                    >
+                        <Edit size="20" color="#7E22CE" />
+                    </button>
+                    {row.original.id !== loggedUser?.id && (
+                    <button
+                        onClick={() => {
+                            dispatch(toggleUserStatus(row.original.id)).then(() => {
+                                dispatch(fetchUsers());
+                            });
+                        }}
+                        className={`text-sm ${row.original.status ? 'text-red-600' : 'text-green-600'} hover:underline`}
+                        title={row.original.status ? "Desactivar" : "Activar"}
+                    >
+                        <Refresh size="20" color={row.original.status ? "#dc2626" : "#16a34a"} />
+                    </button>
+                    )}
+                </div>
             ),
         },
     ], []);

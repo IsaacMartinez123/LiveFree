@@ -42,3 +42,15 @@ export const updateSeller = createAsyncThunk(
         }
     }
 );
+
+export const deleteSeller = createAsyncThunk(
+    'sellers/deleteSeller',
+    async (id: string | number, thunkAPI) => {
+        try {
+            await api.delete(`/sellers/${id}`);
+            return id;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || 'Error al eliminar vendedor');
+        }
+    }
+);

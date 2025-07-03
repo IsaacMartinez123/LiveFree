@@ -15,6 +15,7 @@ export const loginUser = (email: string, password: string, navigate: NavigateFun
 
         navigate('/users');
     } catch (error: any) {
-        dispatch(loginFailure(error.response?.data?.message || 'No se pudo iniciar sesión'));
+        const apiMsg = error.response?.data?.error || error.response?.data?.message || 'No se pudo iniciar sesión';
+        dispatch(loginFailure(apiMsg));
     }
 };

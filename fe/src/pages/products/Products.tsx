@@ -41,7 +41,14 @@ export default function Products() {
         () => [
             { accessorKey: 'reference', header: 'Referencia' },
             { accessorKey: 'product_name', header: 'Nombre' },
-            { accessorKey: 'price', header: 'Precio' },
+            {
+                accessorKey: 'price',
+                header: 'Precio',
+                cell: ({ getValue }) => {
+                    const value = getValue<number>();
+                    return `$ ${Math.floor(value).toLocaleString()}`;
+                }
+            },
             {
                 accessorKey: 'color',
                 header: 'Color',
@@ -61,19 +68,22 @@ export default function Products() {
             { accessorKey: 'size_2XL', header: 'Talla 2XL' },
             { accessorKey: 'size_3XL', header: 'Talla 3XL' },
             { accessorKey: 'size_4XL', header: 'Talla 4XL' },
-            { accessorKey: 'status', header: 'Estado' },
-            // {
-            //     accessorKey: 'status',
-            //     header: 'Estado',
-            //     cell: ({ getValue }) => (
-            //         <div className="flex items-center gap-2">
-            //             <span
-            //                 className="inline-block w-8 h-8 rounded-full border border-gray-300"
-            //                 style={{ backgroundColor: getValue() as string }}
-            //             />
-            //         </div>
-            //     ),
-            // },
+            {
+                accessorKey: 'status',
+                header: 'Estado',
+                cell: ({ getValue }) => {
+                    const status = getValue() as boolean | number;
+                    return (
+                        <span
+                            className={`px-3 py-1 rounded-full text-xs font-semibold
+                                ${status ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}
+                            `}
+                        >
+                            {status ? 'Disponible' : 'Agotado'}
+                        </span>
+                    );
+                }
+            },
             {
                 id: 'actions',
                 header: 'Acciones',
@@ -98,7 +108,7 @@ export default function Products() {
 
     const data = useMemo(() => [...products].reverse(), [products]);
 
-        
+
     useEffect(() => {
         dispatch(fetchProducts());
     }, [dispatch]);
@@ -190,22 +200,22 @@ export default function Products() {
                                 </button>
                             </div>
                         </div>
-                        <AddProduct
-                            isOpen={isModalOpen}
-                            onClose={() => {
-                                setIsModalOpen(false);
-                                setSelectedProduct(undefined);
-                            }}
-                            onSubmitSuccess={() => {
-                                dispatch(fetchProducts());
-                                setSelectedProduct(undefined);
-                            }}
-                            product={selectedProduct}
-                        />
+
                     </>
                 )}
             </div>
-
+            <AddProduct
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setSelectedProduct(undefined);
+                }}
+                onSubmitSuccess={() => {
+                    dispatch(fetchProducts());
+                    setSelectedProduct(undefined);
+                }}
+                product={selectedProduct}
+            />
         </>
     );
 }

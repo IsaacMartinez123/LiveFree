@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createClient, fetchClients, updateClient } from './clientsThunk';
+import { Client } from '../../pages/users/Clients';
 
 const initialState = {
-    clients: [] as any[], // Cambia 'any' por el tipo de cliente que estés utilizando
+    clients: [] as Client[],
     loading: false,
     error: null as string | null,
 };

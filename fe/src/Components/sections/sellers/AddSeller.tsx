@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import { useAppDispatch } from '../../../redux/hooks';
 import { createClient, updateClient } from '../../../redux/clients/clientsThunk';
 import { createSeller, updateSeller } from '../../../redux/sellers/sellersThunk';
+import api from '../../../services/api';
 
 
 type SellerData = {
@@ -12,7 +13,7 @@ type SellerData = {
     name: string;
     document: string;
     phone: string;
-    email: string;
+    seller_code: string;
 };
 
 type Props = {
@@ -20,6 +21,22 @@ type Props = {
     onClose: () => void;
     onSubmitSuccess: () => void;
     seller?: SellerData;
+};
+
+const checkDocumentExists = async (document: string, currentDocument?: string): Promise<boolean> => {
+    if (document === currentDocument) return false;
+
+    const response = await api.get('/sellers/check-document', { params: { document } });
+    return response.data.exists;
+};
+
+const checkCodeExists = async (seller_code: string, currentCode?: string): Promise<boolean> => {
+    if (seller_code === currentCode) return false;
+
+    console.log('Checking code:', seller_code, 'Current code:', currentCode);
+    
+    const response = await api.get('/sellers/check-code', { params: { seller_code } });
+    return response.data.exists;
 };
 
 export default function AddSeller({ isOpen, onClose, onSubmitSuccess, seller }: Props) {
@@ -30,14 +47,36 @@ export default function AddSeller({ isOpen, onClose, onSubmitSuccess, seller }: 
         name: seller?.name || '',
         document: seller?.document || '',
         phone: seller?.phone || '',
-        email: seller?.email || '',
+        seller_code: seller?.seller_code || '',
     }), [seller]);
 
     const validationSchema = useMemo(() => Yup.object({
         name: Yup.string().required('Nombre requerido'),
-        document: Yup.string().required('Documento requerido'),
+        document: Yup.string()
+            .required('Documento requerido')
+            .test('unique-document', 'Este documento ya está registrado', async function (value) {
+                if (!value) return true;
+                try {
+                    const exists = await checkDocumentExists(value, seller?.document);
+                    return !exists;
+                } catch (error) {
+                    return this.createError({ message: 'Error validando documento' });
+                }
+            }),
         phone: Yup.string().required('Teléfono requerido'),
-        email: Yup.string().required('Correo requerido'),
+        seller_code: Yup.string()
+            .required('Código de vendedor requerido')
+            .test('unique-seller_code', 'Este código ya está registrado', async function (value) {
+                if (!value) return true;
+                try {
+                    const exists = await checkCodeExists(value, seller?.seller_code);
+                    return !exists;
+                } catch (error) {
+                    return this.createError({ message: 'Error validando código' });
+                }
+            }),
+        
+
     }), [isEdit]);
 
     const handleSubmit = async (values: any, { resetForm }: any) => {
@@ -108,9 +147,9 @@ export default function AddSeller({ isOpen, onClose, onSubmitSuccess, seller }: 
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label htmlFor="email" className="block text-sm font-medium">Correo</label>
-                                            <Field name="email" type="email" className="input-form w-full" />
-                                            <ErrorMessage name="email" component="div" className="text-red-500 text-xs" />
+                                            <label htmlFor="seller_code" className="block text-sm font-medium">Codigo De Vendedor</label>
+                                            <Field name="seller_code" type="text" className="input-form w-full" />
+                                            <ErrorMessage name="seller_code" component="div" className="text-red-500 text-xs" />
                                         </div>
                                         <div>
                                             <label htmlFor="phone" className="block text-sm font-medium">Teléfono</label>

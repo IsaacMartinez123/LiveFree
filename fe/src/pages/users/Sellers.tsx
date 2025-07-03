@@ -9,16 +9,16 @@ import {
 import { useMemo, useState } from 'react';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { ArrowCircleLeft, ArrowCircleRight, Edit } from 'iconsax-reactjs';
-import { fetchSellers } from '../../redux/sellers/sellersThunk';
+import { ArrowCircleLeft, ArrowCircleRight, Edit, Trash } from 'iconsax-reactjs';
+import { deleteSeller, fetchSellers } from '../../redux/sellers/sellersThunk';
 import AddSeller from '../../Components/sections/sellers/AddSeller';
 
-type Seller = {
+export type Seller = {
     id: number;
     name: string;
     document: string;
     phone: string;
-    email: string;
+    seller_code: string;
 };
 
 
@@ -29,26 +29,38 @@ export default function Sellers() {
 
     const [selectedSeller, setSelectedSeller] = useState<Seller | undefined>(undefined);
 
+    const [showConfirm, setShowConfirm] = useState<{ open: boolean, id?: number }>({ open: false, id: 0 });
+
+
     const columns = useMemo<ColumnDef<Seller>[]>(
         () => [
             { accessorKey: 'name', header: 'Nombre' },
             { accessorKey: 'document', header: 'Documento' },
             { accessorKey: 'phone', header: 'Teléfono' },
-            { accessorKey: 'email', header: 'Correo' },
+            { accessorKey: 'seller_code', header: 'Codigo De Vendedor' },
             {
                 id: 'actions',
                 header: 'Acciones',
                 cell: ({ row }) => (
-                    <button
-                        onClick={() => {
-                            setSelectedSeller(row.original);
-                            setIsModalOpen(true);
-                        }}
-                        className="text-sm text-blue-600 hover:underline"
-                    >
-                        <Edit size="20" color="#7E22CE" />
-
-                    </button>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => {
+                                setSelectedSeller(row.original);
+                                setIsModalOpen(true);
+                            }}
+                            className="text-sm text-blue-600 hover:underline"
+                            title="Editar"
+                        >
+                            <Edit size="20" color="#7E22CE" />
+                        </button>
+                        {/* <button
+                            onClick={() => setShowConfirm({ open: true, id: row.original.id })}
+                            className="text-sm text-red-600 hover:underline"
+                            title="Eliminar"
+                        >
+                            <Trash size="20" color="#dc2626" />
+                        </button> */}
+                    </div>
                 ),
             },
         ],
@@ -79,6 +91,41 @@ export default function Sellers() {
 
     return (
         <>
+            {showConfirm.open && (
+                <div
+                    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50"
+                    onClick={() => setShowConfirm({ open: false })}
+                >
+                    <div
+                        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-xs"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <h2 className="text-lg font-semibold mb-4 text-gray-800">¿Eliminar vendedor?</h2>
+                        <p className="mb-6 text-red-700">¡Esta acción no se puede deshacer!</p>
+                        <div className="flex justify-around items-center">
+                            <button
+                                className="px-4 py-2 rounded bg-error text-white hover:bg-red-600"
+                                onClick={() => setShowConfirm({ open: false })}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                className="px-4 py-2 rounded bg-primary text-white hover:bg-primary-dark"
+                                onClick={() => {
+                                    if (typeof showConfirm.id !== 'undefined') {
+                                        dispatch(deleteSeller(showConfirm.id)).then(() => {
+                                            dispatch(fetchSellers());
+                                            setShowConfirm({ open: false });
+                                        });
+                                    }
+                                }}
+                            >
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             {loading && <div className="text-center text-purple-600 font-medium">Cargando...</div>}
             {error && <div className="text-center text-red-500">Error: {error}</div>}
 

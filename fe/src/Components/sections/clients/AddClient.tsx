@@ -4,6 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useAppDispatch } from '../../../redux/hooks';
 import { createClient, updateClient } from '../../../redux/clients/clientsThunk';
+import api from '../../../services/api';
 
 
 type ClientData = {
@@ -23,6 +24,14 @@ type Props = {
     client?: ClientData;
 };
 
+const checkDocumentExists = async (document: string, currentDocument?: string): Promise<boolean> => {
+    if (document === currentDocument) return false;
+
+    const response = await api.get('/clients/check-document', { params: { document } });
+    return response.data.exists;
+};
+
+
 export default function AddClient({ isOpen, onClose, onSubmitSuccess, client }: Props) {
     const isEdit = !!client;
     const dispatch = useAppDispatch();
@@ -36,14 +45,27 @@ export default function AddClient({ isOpen, onClose, onSubmitSuccess, client }: 
         city: client?.city || '',
     }), [client]);
 
+
     const validationSchema = useMemo(() => Yup.object({
-        name: Yup.string().required('Nombre requerido'),
-        document: Yup.string().required('Documento requerido'),
-        phone: Yup.string().required('Teléfono requerido'),
-        store_name: Yup.string().required('Nombre del almacén requerido'),
-        address: Yup.string().required('Dirección requerida'),
-        city: Yup.string().required('Ciudad requerida'),
-    }), [isEdit]);
+    name: Yup.string().required('Nombre requerido'),
+    document: Yup.string()
+        .required('Documento requerido')
+        .test('unique-document', 'Este documento ya está registrado', async function (value) {
+            if (!value) return true;
+            try {
+                const exists = await checkDocumentExists(value, client?.document);
+                return !exists;
+            } catch (error) {
+                return this.createError({ message: 'Error validando documento' });
+            }
+        }),
+    phone: Yup.string().required('Teléfono requerido'),
+    store_name: Yup.string().required('Nombre del almacén requerido'),
+    address: Yup.string().required('Dirección requerida'),
+    city: Yup.string().required('Ciudad requerida'),
+}), [client]);
+
+
 
     const handleSubmit = async (values: any, { resetForm }: any) => {
         try {
@@ -123,7 +145,7 @@ export default function AddClient({ isOpen, onClose, onSubmitSuccess, client }: 
                                             <ErrorMessage name="phone" component="div" className="text-red-500 text-xs" />
                                         </div>
                                     </div>
-                                    
+
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label htmlFor="address" className="block text-sm font-medium">Dirección</label>

@@ -40,3 +40,15 @@ export const updateUser = createAsyncThunk(
         }
     }
 );
+
+export const toggleUserStatus = createAsyncThunk(
+    'users/toggleUserStatus',
+    async (id: string | number, thunkAPI) => {
+        try {
+            const response = await api.delete(`/users/${id}`);
+            return response.data;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || 'Error al cambiar el estado del usuario');
+        }
+    }
+);

@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { createSeller, fetchSellers, updateSeller } from './sellersThunk';
+import { createSeller, deleteSeller, fetchSellers, updateSeller } from './sellersThunk';
+import { Seller } from '../../pages/users/Sellers';
 
 const initialState = {
-    sellers: []  as any[], // Cambia 'any' por el tipo adecuado si lo tienes definido
+    sellers: [] as Seller[], // Cambia 'any' por el tipo adecuado si lo tienes definido
     loading: false,
     error: null as string | null,
 };
@@ -55,6 +56,20 @@ const sellersSlice = createSlice({
                 }
             })
             .addCase(updateSeller.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+
+            // Eliminar vendedor
+            .addCase(deleteSeller.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteSeller.fulfilled, (state, action) => {
+                state.loading = false;
+                state.sellers = state.sellers.filter((seller: any) => seller.id !== action.payload);
+            })
+            .addCase(deleteSeller.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             });

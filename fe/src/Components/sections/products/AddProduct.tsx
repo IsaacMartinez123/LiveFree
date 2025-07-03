@@ -38,15 +38,15 @@ export default function AddProduct({ isOpen, onClose, onSubmitSuccess, product }
     const initialValues = useMemo(() => ({
         reference: product?.reference || '',
         product_name: product?.product_name || '',
-        price: product?.price || 0,
+        price: product?.price || '',
         color: product?.color || '',
-        size_S: product?.size_S || 0,
-        size_M: product?.size_M || 0,
-        size_L: product?.size_L || 0,
-        size_XL: product?.size_XL || 0,
-        size_2XL: product?.size_2XL || 0,
-        size_3XL: product?.size_3XL || 0,
-        size_4XL: product?.size_4XL || 0,
+        size_S: product?.size_S || '',
+        size_M: product?.size_M || '',
+        size_L: product?.size_L || '',
+        size_XL: product?.size_XL || '',
+        size_2XL: product?.size_2XL || '',
+        size_3XL: product?.size_3XL || '',
+        size_4XL: product?.size_4XL || '',
         status: product?.status || false,
     }), [product]);
 
@@ -55,14 +55,13 @@ export default function AddProduct({ isOpen, onClose, onSubmitSuccess, product }
         product_name: Yup.string().required('Nombre del producto requerido'),
         price: Yup.number().required('Precio requerido').min(0, 'El precio debe ser numero positivo'),
         color: Yup.string().required('Color requerido'),
-        size_S: Yup.number().required('Talla S requerida').min(0, 'La talla debe ser numero positivo'),
-        size_M: Yup.number().required('Talla M requerida').min(0, 'La talla debe ser numero positivo'),
-        size_L: Yup.number().required('Talla L requerida').min(0, 'La talla debe ser numero positivo'),
-        size_XL: Yup.number().required('Talla XL requerida').min(0, 'La talla debe ser numero positivo'),
-        size_2XL: Yup.number().required('Talla 2XL requerida').min(0, 'La talla debe ser numero positivo'),
-        size_3XL: Yup.number().required('Talla 3XL requerida').min(0, 'La talla debe ser numero positivo'),
-        size_4XL: Yup.number().required('Talla 4XL requerida').min(0, 'La talla debe ser numero positivo'),
-        status: Yup.boolean().required('Estado requerido'),
+        size_S: Yup.number().min(0, 'La talla debe ser numero positivo'),
+        size_M: Yup.number().min(0, 'La talla debe ser numero positivo'),
+        size_L: Yup.number().min(0, 'La talla debe ser numero positivo'),
+        size_XL: Yup.number().min(0, 'La talla debe ser numero positivo'),
+        size_2XL: Yup.number().min(0, 'La talla debe ser numero positivo'),
+        size_3XL: Yup.number().min(0, 'La talla debe ser numero positivo'),
+        size_4XL: Yup.number().min(0, 'La talla debe ser numero positivo'),
     }), [isEdit]);
 
     const handleSubmit = async (values: any, { resetForm }: any) => {
@@ -121,12 +120,12 @@ export default function AddProduct({ isOpen, onClose, onSubmitSuccess, product }
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label htmlFor="reference" className="block text-sm font-medium">Referencia</label>
-                                            <Field name="reference" type="text" className="input-form w-full" />
+                                            <Field name="reference" type="text" className="input-form w-full" placeholder="Ingrese El Numero De Referencia" />
                                             <ErrorMessage name="reference" component="div" className="text-red-500 text-xs" />
                                         </div>
                                         <div>
-                                            <label htmlFor="product_name" className="block text-sm font-medium">Nombre</label>
-                                            <Field name="product_name" className="input-form w-full" />
+                                            <label htmlFor="product_name" className="block text-sm font-medium" >Nombre</label>
+                                            <Field name="product_name" className="input-form w-full" placeholder="Ingrese El Nombre Del Prodcuto" />
                                             <ErrorMessage name="product_name" component="div" className="text-red-500 text-xs" />
                                         </div>
                                     </div>
@@ -134,7 +133,7 @@ export default function AddProduct({ isOpen, onClose, onSubmitSuccess, product }
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label htmlFor="price" className="block text-sm font-medium">Precio</label>
-                                            <Field name="price" type="number" className="input-form w-full" />
+                                            <Field name="price" type="number" className="input-form w-full" placeholder="Ingrese El Precio Del Producto" />
                                             <ErrorMessage name="price" component="div" className="text-red-500 text-xs" />
                                         </div>
                                         <div>
@@ -156,12 +155,12 @@ export default function AddProduct({ isOpen, onClose, onSubmitSuccess, product }
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label htmlFor="size_S" className="block text-sm font-medium">Talla S</label>
-                                            <Field name="size_S" type="number" className="input-form w-full" />
+                                            <Field name="size_S" type="number" className="input-form w-full" placeholder="Ingrese La Cantidad De La Talla" />
                                             <ErrorMessage name="size_S" component="div" className="text-red-500 text-xs" />
                                         </div>
                                         <div>
                                             <label htmlFor="size_M" className="block text-sm font-medium">Talla M</label>
-                                            <Field name="size_M" type="number" className="input-form w-full" />
+                                            <Field name="size_M" type="number" className="input-form w-full" placeholder="Ingrese La Cantidad De La Talla" />
                                             <ErrorMessage name="size_M" component="div" className="text-red-500 text-xs" />
                                         </div>
                                     </div>
@@ -169,12 +168,12 @@ export default function AddProduct({ isOpen, onClose, onSubmitSuccess, product }
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label htmlFor="size_L" className="block text-sm font-medium">Talla L</label>
-                                            <Field name="size_L" type="number" className="input-form w-full" />
+                                            <Field name="size_L" type="number" className="input-form w-full" placeholder="Ingrese La Cantidad De La Talla" />
                                             <ErrorMessage name="size_L" component="div" className="text-red-500 text-xs" />
                                         </div>
                                         <div>
                                             <label htmlFor="size_XL" className="block text-sm font-medium">Talla XL</label>
-                                            <Field name="size_XL" type="number" className="input-form w-full" />
+                                            <Field name="size_XL" type="number" className="input-form w-full" placeholder="Ingrese La Cantidad De La Talla" />
                                             <ErrorMessage name="size_XL" component="div" className="text-red-500 text-xs" />
                                         </div>
                                     </div>
@@ -182,19 +181,19 @@ export default function AddProduct({ isOpen, onClose, onSubmitSuccess, product }
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label htmlFor="size_2XL" className="block text-sm font-medium">Talla 2XL</label>
-                                            <Field name="size_2XL" type="number" className="input-form w-full" />
+                                            <Field name="size_2XL" type="number" className="input-form w-full" placeholder="Ingrese La Cantidad De La Talla" />
                                             <ErrorMessage name="size_2XL" component="div" className="text-red-500 text-xs" />
                                         </div>
                                         <div>
                                             <label htmlFor="size_3XL" className="block text-sm font-medium">Talla 3XL</label>
-                                            <Field name="size_3XL" type="number" className="input-form w-full" />
+                                            <Field name="size_3XL" type="number" className="input-form w-full" placeholder="Ingrese La Cantidad De La Talla" />
                                             <ErrorMessage name="size_3XL" component="div" className="text-red-500 text-xs" />
                                         </div>
                                     </div>
 
                                     <div>
                                         <label htmlFor="size_4XL" className="block text-sm font-medium">Talla 4XL</label>
-                                        <Field name="size_4XL" type="number" className="input-form w-full" />
+                                        <Field name="size_4XL" type="number" className="input-form w-full" placeholder="Ingrese La Cantidad De La Talla" />
                                         <ErrorMessage name="size_4XL" component="div" className="text-red-500 text-xs" />
                                     </div>
 

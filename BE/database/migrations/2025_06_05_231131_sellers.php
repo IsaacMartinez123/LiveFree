@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('document')->unique();
             $table->string('phone');
-            $table->string('email')->unique();
+            $table->string('seller_code')->unique();
         });
     }
 

@@ -15,7 +15,7 @@ class Seller extends Model
         'name',
         'document',
         'phone',
-        'email'
+        'seller_code'
     ];
 
     public function sales()

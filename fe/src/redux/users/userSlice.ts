@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchUsers, createUser, updateUser } from './usersThunk';
+import { fetchUsers, createUser, updateUser, toggleUserStatus } from './usersThunk';
+import { User } from '../../pages/users/Users';
 
 const initialState = {
-    users:  [] as any[], // Cambia 'any' por el tipo de usuario que estés utilizando
+    users:  [] as User[], // Cambia 'any' por el tipo de usuario que estés utilizando
     loading: false,
     error: null as string | null,
 };
@@ -58,7 +59,28 @@ const usersSlice = createSlice({
             .addCase(updateUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
+            })
+
+            .addCase(toggleUserStatus.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(toggleUserStatus.fulfilled, (state, action) => {
+                state.loading = false;
+                const { status } = action.payload;
+                
+                const id = action.meta.arg;
+                const idx = state.users.findIndex((user: any) => user.id === id);
+                if (idx !== -1) {
+                    state.users[idx].status = status;
+                }
+            })
+            .addCase(toggleUserStatus.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
             });
+
+            
     },
 });
 
