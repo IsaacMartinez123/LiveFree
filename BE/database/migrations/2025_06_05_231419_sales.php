@@ -15,8 +15,8 @@ return new class extends Migration
             $table->foreignId('seller_id')->constrained('sellers');
             $table->foreignId('user_id')->constrained('users');
             $table->decimal('total', 10, 2);
-            $table->date('date');
-            $table->string('status');
+            $table->enum('status', ['pendiente', 'despachada', 'cancelada', 'devuelta'])->default('pendiente');
+            $table->timestamps();
         });
     }
 

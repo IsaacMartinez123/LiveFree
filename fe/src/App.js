@@ -8,6 +8,7 @@ import Users from './pages/users/Users';
 import Products from './pages/products/Products';
 import Sellers from './pages/users/Sellers';
 import Clients from './pages/users/Clients';
+import Sales from './pages/sales/Sales';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from './redux/hooks';
 import { loginSuccess } from './redux/auth/authSlice';
@@ -87,6 +88,16 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <Clients />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/sales"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Sales />
               </Layout>
             </ProtectedRoute>
           }

@@ -36,6 +36,19 @@ export default function Users() {
         { accessorKey: 'email', header: 'Correo' },
         { accessorKey: 'rol_id', header: 'Rol' },
         {
+            accessorKey: 'rol_id',
+            header: 'Rol',
+            cell: ({ getValue }) => {
+                const rolId = getValue() as string;
+                const roles: Record<string, string> = {
+                    '1': 'Administrador',
+                    '2': 'Vendedor',
+                };
+                return roles[rolId] || 'Desconocido';
+            }
+            
+        },
+        {
             accessorKey: 'status',
             header: 'Estado',
             cell: ({ getValue }) => {

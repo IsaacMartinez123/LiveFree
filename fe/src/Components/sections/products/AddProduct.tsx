@@ -3,8 +3,6 @@ import { Fragment, useMemo } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useAppDispatch } from '../../../redux/hooks';
-import { createClient, updateClient } from '../../../redux/clients/clientsThunk';
-import { createSeller, updateSeller } from '../../../redux/sellers/sellersThunk';
 import { createProduct, updateProduct } from '../../../redux/products/productsThunk';
 
 

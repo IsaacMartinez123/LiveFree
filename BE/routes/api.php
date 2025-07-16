@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsersControllers;
@@ -37,5 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/sellers/check-document', [SellerController::class, 'checkDocument']);
     Route::get('/sellers/check-code', [SellerController::class, 'checkCode']);
     Route::resource('sellers', SellerController::class);
+
+    Route::resource('sales', SaleController::class);
     
 });

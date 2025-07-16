@@ -157,7 +157,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
                         {sidebarOpen && openVentas && (
                             <ul className="ml-4 mt-1 space-y-1">
                                 <li>
-                                    <button className="pl-6 py-2 text-form-label hover:text-primary-dark">
+                                    <button
+                                        className="pl-6 py-2 text-form-label hover:text-primary-dark"
+                                        onClick={() => {
+                                            navigate("/sales");
+                                        }}
+                                    >
                                         Gestión de ventas
                                     </button>
                                 </li>
