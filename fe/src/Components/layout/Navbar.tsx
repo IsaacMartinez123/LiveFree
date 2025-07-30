@@ -21,7 +21,16 @@ export default function Navbar() {
 
     return (
         <header className="h-16 sm:h-20 bg-primary-muted shadow-md flex items-center justify-between px-4 sm:px-10">
-            <div className="text-gray-600 font-medium text-sm sm:text-base"></div>
+            {/* LOGO */}
+            <div className="flex items-center">
+                <img
+                    src="/livefreelogo.png"
+                    alt="Livefree Logo"
+                    className="h-8 sm:h-10 w-auto object-contain"
+                />
+            </div>
+
+            {/* PERFIL DE USUARIO */}
             <div className="relative flex items-center gap-2 text-sm sm:text-base" ref={menuRef}>
                 <button
                     className="flex items-center gap-2 focus:outline-none"
@@ -32,6 +41,7 @@ export default function Navbar() {
                         {user?.name}
                     </span>
                 </button>
+
                 {open && (
                     <div className="absolute right-0 top-full mt-2 w-44 bg-white rounded shadow-lg z-50 py-2 border border-gray-100">
                         <button

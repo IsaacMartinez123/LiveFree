@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Seller;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class SellerController extends Controller
@@ -26,6 +27,9 @@ class SellerController extends Controller
     public function store(Request $request)
     {
         try {
+
+            DB::beginTransaction();
+            
             $messages = [
                 'required' => 'El campo :attribute es requerido.',
                 'string' => 'El campo :attribute debe ser una cadena de texto.',
@@ -50,9 +54,12 @@ class SellerController extends Controller
                     'seller_code' => $request->seller_code,
                 ]);
 
+                DB::commit();
+
                 return response()->json(['message' => 'Vendedor Registrado Correctamente', 'vendedor' => $seller], 201);
             }
         } catch (QueryException $e) {
+            DB::rollBack();
             $errorMessage = $e->getMessage();
             return response()->json(['message' => $errorMessage], 400);
         }
@@ -77,6 +84,8 @@ class SellerController extends Controller
     public function update(Request $request, string $id)
     {
         try {
+
+            DB::beginTransaction();
 
             $messages = [
                 'required' => 'El campo :attribute es requerido.',
@@ -108,9 +117,12 @@ class SellerController extends Controller
                     'seller_code' => $request->seller_code ?? $seller->seller_code,
                 ]);
 
+                DB::commit();
+
                 return response()->json(['message' => 'Vendedor actualizado correctamente', 'vendedor' => $seller]);
             }
         } catch (QueryException $e) {
+            DB::rollBack();
             $errorMessage = $e->getMessage();
             return response()->json(['message' => $errorMessage], 400);
         }
@@ -119,6 +131,7 @@ class SellerController extends Controller
     public function destroy(string $id)
     {
         try {
+            DB::beginTransaction();
             $seller = Seller::find($id);
 
             if (!$seller) {
@@ -126,9 +139,10 @@ class SellerController extends Controller
             }
 
             $seller->delete();
-
+            DB::commit();
             return response()->json(['message' => 'Vendedor eliminado correctamente']);
         } catch (QueryException $e) {
+            DB::rollBack();
             $errorMessage = $e->getMessage();
             return response()->json(['message' => $errorMessage], 400);
         }

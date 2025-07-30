@@ -3,46 +3,108 @@ import {
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
+    getSortedRowModel,
     flexRender,
     ColumnDef,
+    SortingState
 } from '@tanstack/react-table';
+
 import { useMemo, useState } from 'react';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { fetchUsers, toggleUserStatus } from '../../redux/users/usersThunk';
-import { ArrowCircleLeft, ArrowCircleRight, Edit, Refresh } from 'iconsax-reactjs';
-import AddUser from '../../Components/sections/user/AddUser';
-import { toast } from 'react-toastify';
+import { ArrowCircleLeft, ArrowCircleRight, EmptyWalletAdd, Eye } from 'iconsax-reactjs';
+import { fetchPayments } from '../../redux/payments/paymentsThunk';
+import AddPayment from '../../Components/sections/payments/AddPayment';
+import PaymentDetail from './PaymentsDetail';
+import { SortableHeader } from '../../Components/layout/SortableHeader';
 
-export type User = {
+export type PaymentDetail = {
     id: number;
-    name: string;
-    email: string;
-    rol_id: string;
-    status: boolean;
+    payment_id: number;
+    amount: string;
+    payment_method: string;
+    date: string;
+    observations: string | null;
 };
 
-export default function Users() {
+export type Client = {
+    id: number;
+    name: string;
+};
+
+export type Payment = {
+    id: number;
+    sales_id: number;
+    client_id: number;
+    invoice_number: string;
+    total_debt: string;
+    total_payment: string;
+    status: string;
+    client: Client;
+    payment_details: PaymentDetail[];
+};
+
+
+export default function Payments() {
 
     const [globalFilter, setGlobalFilter] = useState('');
 
+    const [sorting, setSorting] = useState<SortingState>([]);
+
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
+    const [isDetailOpen, setIsDetailOpen] = useState(false);
 
-    const loggedUser = useAppSelector(state => state.auth.user);
+    const [selectedPayment, setSelectedPayment] = useState<Payment | undefined>(undefined);
 
-    const columns = useMemo<ColumnDef<User>[]>(() => [
-        { accessorKey: 'name', header: 'Nombre' },
-        { accessorKey: 'email', header: 'Correo' },
+    const columns = useMemo<ColumnDef<Payment>[]>(() => [
         {
-            accessorKey: 'rol',
-            header: 'Rol',
+            accessorKey: 'invoice_number',
+            header: ({ column }) => (
+                <SortableHeader column={column} label="Número de Factura" />
+            ),
+
+        },
+        {
+            accessorKey: 'client',
+            header: ({ column }) => (
+                <SortableHeader column={column} label="Cliente" />
+            ),
             cell: ({ getValue }) => {
-                const rol = getValue() as { id: string; rol_name: string };
-                return rol.rol_name
+                const client = getValue() as { id: string; name: string };
+                return client.name ? client.name : 'Sin cliente asignado';
             }
 
+        },
+        {
+            accessorKey: 'total_debt',
+            header: ({ column }) => (
+                <SortableHeader column={column} label="Total Deuda" />
+            ),
+            cell: ({ getValue }) => {
+                const value = getValue<number>();
+                return `$ ${Math.floor(value).toLocaleString()}`;
+            }
+
+        },
+        {
+            accessorKey: 'total_payment',
+            header: ({ column }) => (
+                <SortableHeader column={column} label="Total Pagado" />
+            ),
+            cell: ({ getValue }) => {
+                const value = getValue<number>();
+                return `$ ${Math.floor(value).toLocaleString()}`;
+            }
+        },
+        {
+            header: 'Deuda Restante',
+            cell: ({ row }) => {
+                const totalDebt = row.original.total_debt;
+                const totalPayment = row.original.total_payment;
+                const remainingDebt = parseFloat(totalDebt) - parseFloat(totalPayment);
+                return `$ ${Math.floor(remainingDebt).toLocaleString()}`;
+            }
         },
         {
             accessorKey: 'status',
@@ -52,10 +114,10 @@ export default function Users() {
                 return (
                     <span
                         className={`px-3 py-1 rounded-full text-md font-semibold
-                                ${status ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}
+                                ${status ? 'bg-green-100 text-green-700' : 'bg-red-100 text-yellow-700'}
                             `}
                     >
-                        {status ? 'Activo' : 'Inactivo'}
+                        {status ? 'Pagado' : 'Pendiente'}
                     </span>
                 );
             }
@@ -63,47 +125,48 @@ export default function Users() {
         {
             id: 'actions',
             header: 'Acciones',
-            cell: ({ row }) => (
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => {
-                            setSelectedUser(row.original);
-                            setIsModalOpen(true);
-                        }}
-                        className="text-sm text-blue-600 hover:underline"
-                        title="Editar"
-                    >
-                        <Edit size="20" color="#7E22CE" />
-                    </button>
-                    {row.original.id !== loggedUser?.id && (
+            cell: ({ row }) => {
+                const status = row.original.status;
+
+                return (
+                    <div className="flex gap-2">
                         <button
                             onClick={() => {
-                                dispatch(toggleUserStatus(row.original.id))
-                                    .unwrap()
-                                    .then((res) => {
-                                        toast.success(res.message || 'Estado del usuario actualizado con éxito');
-                                        dispatch(fetchUsers());
-                                    });
+                                setSelectedPayment(row.original);
+                                setIsDetailOpen(true);
                             }}
-                            className={`text-sm ${row.original.status ? 'text-red-600' : 'text-green-600'} hover:underline`}
-                            title={row.original.status ? "Desactivar" : "Activar"}
+                            className="text-sm text-blue-600 hover:underline"
+                            title="Ver Detalle"
                         >
-                            <Refresh size="20" color={row.original.status ? "#dc2626" : "#16a34a"} />
+                            <Eye size="25" />
                         </button>
-                    )}
-                </div>
-            ),
+                        {!status && (
+                            <button
+                                onClick={() => {
+                                    setSelectedPayment(row.original);
+                                    setIsModalOpen(true);
+                                }}
+                                className="text-sm text-blue-600 hover:underline"
+                                title="Editar"
+                            >
+                                <EmptyWalletAdd size="25" color="#7E22CE" />
+                            </button>
+                        )}
+                    </div>
+                );
+
+            }
         },
     ], []);
 
 
     const dispatch = useAppDispatch();
-    const { users, loading, error } = useAppSelector(state => state.users);
+    const { payments, loading, error } = useAppSelector(state => state.payments);
 
-    const data = useMemo(() => [...users].reverse(), [users]);
+    const data = useMemo(() => [...payments].reverse(), [payments]);
 
     useEffect(() => {
-        dispatch(fetchUsers());
+        dispatch(fetchPayments());
     }, [dispatch]);
 
     const table = useReactTable({
@@ -111,10 +174,12 @@ export default function Users() {
         columns,
         state: {
             globalFilter,
+            sorting,
         },
-        onGlobalFilterChange: setGlobalFilter,
+        onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
     });
 
@@ -132,12 +197,7 @@ export default function Users() {
                         value={globalFilter}
                         onChange={e => setGlobalFilter(e.target.value)}
                     />
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary transition text-base sm:text-lg w-full sm:w-auto"
-                    >
-                        Registrar Usuario
-                    </button>
+
                 </div>
                 {!loading && !error && (
                     <>
@@ -195,17 +255,25 @@ export default function Users() {
                     </>
                 )}
             </div>
-            <AddUser
+            <AddPayment
                 isOpen={isModalOpen}
                 onClose={() => {
                     setIsModalOpen(false);
-                    setSelectedUser(undefined);
+                    setSelectedPayment(undefined);
                 }}
                 onSubmitSuccess={() => {
-                    dispatch(fetchUsers());
-                    setSelectedUser(undefined);
+                    dispatch(fetchPayments());
+                    setSelectedPayment(undefined);
                 }}
-                user={selectedUser}
+                payment={selectedPayment}
+            />
+            <PaymentDetail
+                isOpen={isDetailOpen}
+                onClose={() => {
+                    setIsDetailOpen(false);
+                    setSelectedPayment(undefined);
+                }}
+                payment={selectedPayment}
             />
         </>
     );

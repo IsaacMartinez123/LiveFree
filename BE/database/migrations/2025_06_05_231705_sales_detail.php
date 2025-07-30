@@ -13,7 +13,7 @@ return new class extends Migration
 
             $table->foreignId('sale_id')->constrained('sales')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
-
+            $table->string('reference');
             $table->string('product_name');
             $table->decimal('price', 10, 2);
             $table->string('color');
@@ -26,6 +26,7 @@ return new class extends Migration
             $table->integer('size_2XL');
             $table->integer('size_3XL');
             $table->integer('size_4XL');
+            $table->integer('sub_total');
 
             // Campos auxiliares para devoluciones
             $table->integer('returned_S')->default(0);

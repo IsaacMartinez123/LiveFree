@@ -137,14 +137,14 @@ export default function Clients() {
                     <input
                         type="text"
                         placeholder="Buscar..."
-                        className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-72 text-sm"
+                        className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-72 text-base sm:text-lg"
                         value={globalFilter}
                         onChange={e => setGlobalFilter(e.target.value)}
                     />
 
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary transition text-sm w-full sm:w-auto"
+                        className="bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary transition text-base sm:text-lg w-full sm:w-auto"
                     >
                         Registrar Cliente
                     </button>
@@ -152,7 +152,7 @@ export default function Clients() {
                 {!loading && !error && (
                     <>
                         <div className="overflow-x-auto rounded shadow">
-                            <table className="min-w-full bg-white text-left text-sm sm:text-base">
+                            <table className="min-w-full bg-white text-left text-base sm:text-lg">
                                 <thead className="bg-purple-100">
                                     {table.getHeaderGroups().map(headerGroup => (
                                         <tr key={headerGroup.id}>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ClientController extends Controller
@@ -26,7 +27,9 @@ class ClientController extends Controller
     public function store(Request $request)
     {
         try {
-
+            
+            DB::beginTransaction();
+            
             $messages = [
                 'required' => 'El campo :attribute es requerido.',
                 'string' => 'El campo :attribute debe ser una cadena de texto.',
@@ -55,9 +58,12 @@ class ClientController extends Controller
                     'city' => $request->city,
                 ]);
 
+                DB::commit();
+
                 return response()->json(['message' => 'Cliente Registrado Correctamente', 'cliente' => $client], 201);
             }
         } catch (QueryException $e) {
+            DB::rollBack();
             $errorMessage = $e->getMessage();
             return response()->json(['message' => $errorMessage], 400);
         }
@@ -82,6 +88,8 @@ class ClientController extends Controller
     public function update(Request $request, string $id)
     {
         try {
+
+            DB::beginTransaction();
 
             $messages = [
                 'required' => 'El campo :attribute es requerido.',
@@ -117,9 +125,12 @@ class ClientController extends Controller
                     'city' => $request->city ?? $client->city,
                 ]);
 
+                DB::commit();
+
                 return response()->json(['message' => 'Cliente actualizado correctamente', 'cliente' => $client]);
             }
         } catch (QueryException $e) {
+            DB::rollBack();
             $errorMessage = $e->getMessage();
             return response()->json(['message' => $errorMessage], 400);
         }
@@ -129,6 +140,8 @@ class ClientController extends Controller
     {
         try {
 
+            DB::beginTransaction();
+
             $client = Client::find($id);
 
             if (!$client) {
@@ -137,8 +150,11 @@ class ClientController extends Controller
 
             $client->delete();
 
+            DB::commit();
+
             return response()->json(['message' => 'Cliente eliminado correctamente']);
         } catch (QueryException $e) {
+            DB::rollBack();
             $errorMessage = $e->getMessage();
             return response()->json(['message' => $errorMessage], 400);
         }

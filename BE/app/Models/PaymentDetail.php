@@ -9,6 +9,8 @@ class PaymentDetail extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+    
     protected $fillable = [
         'payment_id', 'amount', 'payment_method', 'date', 'observations'
     ];

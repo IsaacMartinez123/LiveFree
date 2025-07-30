@@ -4,6 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { createUser, updateUser } from '../../../redux/users/usersThunk';
 import { useAppDispatch } from '../../../redux/hooks';
+import { toast } from 'react-toastify';
 
 
 type UserData = {
@@ -47,16 +48,19 @@ export default function AddUser({ isOpen, onClose, onSubmitSuccess, user }: Prop
     const handleSubmit = async (values: any, { resetForm }: any) => {
         try {
             if (isEdit) {
-                await dispatch(updateUser({ id: user?.id, ...values }));
+                const response = await dispatch(updateUser({ id: user?.id, ...values }));
+                toast.success(response.payload.message);
             } else {
-                await dispatch(createUser(values));
+                const response = await dispatch(createUser(values));
+                toast.success(response.payload.message);
             }
 
             resetForm();
             onSubmitSuccess();
             onClose();
-        } catch (error) {
-            console.error('Error al guardar:', error);
+        } catch (error: any) {
+            const apiMessage = error.response?.data?.message || error.message;
+            toast.error(apiMessage || 'Error al guardar el cliente');
         }
     };
 

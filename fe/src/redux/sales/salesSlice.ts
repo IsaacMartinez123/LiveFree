@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchSales, createSale, toggleSaleStatus } from './salesThunk';
+import { fetchSales, createSale, toggleSaleStatus, dispatchSale } from './salesThunk';
 import { Sales } from '../../pages/sales/Sales';
 
 const initialState = {
@@ -55,6 +55,23 @@ const salesSlice = createSlice({
                 }
             })
             .addCase(toggleSaleStatus.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+
+            .addCase(dispatchSale.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(dispatchSale.fulfilled, (state, action) => {
+                state.loading = false;
+                const id = action.meta.arg;
+                const idx = state.sales.findIndex((sale: any) => sale.id === id);
+                if (idx !== -1) {
+                    state.sales[idx].status = 'despachada';
+                }
+            })
+            .addCase(dispatchSale.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             });

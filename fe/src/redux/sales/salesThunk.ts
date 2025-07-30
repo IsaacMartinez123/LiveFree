@@ -17,7 +17,7 @@ export const createSale = createAsyncThunk(
     'sales/createSale',
     async (saleData, thunkAPI) => {
         try {
-            const res = await api.post('/sales', saleData);
+            const res = await api.post('/sales', saleData);            
             return res.data;
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error.response?.data?.message || 'Error al crear venta');
@@ -33,6 +33,18 @@ export const toggleSaleStatus = createAsyncThunk(
             return response.data;
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error.response?.data?.message || 'Error al cambiar el estado de la venta');
+        }
+    }
+);
+
+export const dispatchSale = createAsyncThunk(
+    'sales/dispatchSale',
+    async (id: string | number, thunkAPI) => {
+        try {
+            const response = await api.patch(`/sales/dispatch/${id}`);
+            return response.data;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || 'Error al despachar la venta');
         }
     }
 );

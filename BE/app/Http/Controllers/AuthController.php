@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Support\Facades\Validator;
@@ -15,6 +16,9 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         try {
+
+            DB::beginTransaction();
+            
             $messages = [
                 'email.required' => 'El campo email es obligatorio.',
                 'email.email' => 'El campo email debe ser una dirección de correo electrónico válida.',
@@ -41,16 +45,19 @@ class AuthController extends Controller
 
                 if ($user && Hash::check($request->password, $user->password)) {
                     $token = $user->createToken('authToken')->plainTextToken;
+                    DB::commit();
                     return response()->json([
                         'message' => 'Inicio de sesión exitoso',
                         'user' => $user,
                         'token' => $token,
                     ]);
                 }
+                
 
                 return response()->json(['error' => 'Credenciales Incorrectas'], 401);
             }
         } catch (QueryException $e) {
+            DB::rollBack();
             $errorMessage = $e->getMessage();
             return response()->json(['message' => $errorMessage], 400);
         }

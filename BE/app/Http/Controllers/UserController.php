@@ -13,7 +13,10 @@ class UserController extends Controller
     public function index()
     {
         try {
-            $users = User::all();
+            $users = User::select('id', 'name', 'email', 'rol_id', 'status', 'created_at')
+                ->with('rol:id,rol_name')
+                ->get();
+
             if ($users->isEmpty()) {
                 return response()->json(['message' => 'No se encontraron resultados'], 404);
             }

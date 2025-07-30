@@ -9,9 +9,11 @@ import Products from './pages/products/Products';
 import Sellers from './pages/users/Sellers';
 import Clients from './pages/users/Clients';
 import Sales from './pages/sales/Sales';
+import Payments from './pages/payments/Payments';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from './redux/hooks';
 import { loginSuccess } from './redux/auth/authSlice';
+import { ToastContainer } from 'react-toastify';
 
 function Loader() {
   return (
@@ -102,7 +104,18 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/payments"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Payments />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
       </Routes>
+      <ToastContainer position="bottom-right" autoClose={4000} theme='colored' />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import { useAppDispatch } from '../../../redux/hooks';
 import { createClient, updateClient } from '../../../redux/clients/clientsThunk';
 import api from '../../../services/api';
+import { toast } from 'react-toastify';
 
 
 type ClientData = {
@@ -70,16 +71,19 @@ export default function AddClient({ isOpen, onClose, onSubmitSuccess, client }: 
     const handleSubmit = async (values: any, { resetForm }: any) => {
         try {
             if (isEdit) {
-                await dispatch(updateClient({ id: client?.id, ...values }));
+                const response = await dispatch(updateClient({ id: client?.id, ...values }));
+                toast.success(response.payload.message);
             } else {
-                await dispatch(createClient(values));
+                const response = await dispatch(createClient(values));
+                toast.success(response.payload.message);
             }
 
             resetForm();
             onSubmitSuccess();
             onClose();
-        } catch (error) {
-            console.error('Error al guardar:', error);
+        } catch (error: any) {
+            const apiMessage = error.response?.data?.message || error.message;
+            toast.error(apiMessage || 'Error al guardar el cliente');
         }
     };
 

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SellerController;
@@ -39,6 +40,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/sellers/check-code', [SellerController::class, 'checkCode']);
     Route::resource('sellers', SellerController::class);
 
+    Route::patch('/sales/dispatch/{id}', [SaleController::class, 'dispatchSale']);
     Route::resource('sales', SaleController::class);
+
+    Route::resource('payments', PaymentController::class);
     
 });

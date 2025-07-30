@@ -6,6 +6,7 @@ import { useAppDispatch } from '../../../redux/hooks';
 import { createClient, updateClient } from '../../../redux/clients/clientsThunk';
 import { createSeller, updateSeller } from '../../../redux/sellers/sellersThunk';
 import api from '../../../services/api';
+import { toast } from 'react-toastify';
 
 
 type SellerData = {
@@ -82,16 +83,19 @@ export default function AddSeller({ isOpen, onClose, onSubmitSuccess, seller }: 
     const handleSubmit = async (values: any, { resetForm }: any) => {
         try {
             if (isEdit) {
-                await dispatch(updateSeller({ id: seller?.id, ...values }));
+                const response = await dispatch(updateSeller({ id: seller?.id, ...values }));
+                toast.success(response.payload.message);
             } else {
-                await dispatch(createSeller(values));
+                const response = await dispatch(createSeller(values));
+                toast.success(response.payload.message);
             }
 
             resetForm();
             onSubmitSuccess();
             onClose();
-        } catch (error) {
-            console.error('Error al guardar:', error);
+        } catch (error: any) {
+            const apiMessage = error.response?.data?.message || error.message;
+            toast.error(apiMessage || 'Error al guardar el cliente');
         }
     };
 

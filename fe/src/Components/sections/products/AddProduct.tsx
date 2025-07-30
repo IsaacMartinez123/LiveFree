@@ -4,6 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useAppDispatch } from '../../../redux/hooks';
 import { createProduct, updateProduct } from '../../../redux/products/productsThunk';
+import { toast } from 'react-toastify';
 
 
 type ProductData = {
@@ -64,17 +65,20 @@ export default function AddProduct({ isOpen, onClose, onSubmitSuccess, product }
 
     const handleSubmit = async (values: any, { resetForm }: any) => {
         try {
-            if (isEdit) {                
-                await dispatch(updateProduct({ id: product?.id, ...values }));
+            if (isEdit) {
+                const response = await dispatch(updateProduct({ id: product?.id, ...values }));
+                toast.success(response.payload.message);
             } else {
-                await dispatch(createProduct(values));
+                const response = await dispatch(createProduct(values));
+                toast.success(response.payload.message);
             }
 
             resetForm();
             onSubmitSuccess();
             onClose();
-        } catch (error) {
-            console.error('Error al guardar:', error);
+        } catch (error: any) {
+            const apiMessage = error.response?.data?.message || error.message;
+            toast.error(apiMessage || 'Error al guardar el cliente');
         }
     };
 

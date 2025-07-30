@@ -1,17 +1,23 @@
+
 import {
     useReactTable,
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
+    getSortedRowModel,
     flexRender,
     ColumnDef,
+    SortingState
 } from '@tanstack/react-table';
+
+
 import { useMemo, useState } from 'react';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { ArrowCircleLeft, ArrowCircleRight, Edit } from 'iconsax-reactjs';
 import { fetchProducts } from '../../redux/products/productsThunk';
 import AddProduct from '../../Components/sections/products/AddProduct';
+import { SortableHeader } from '../../Components/layout/SortableHeader';
 
 export type Products = {
     id: number;
@@ -33,21 +39,36 @@ export type Products = {
 export default function Products() {
     const [globalFilter, setGlobalFilter] = useState('');
 
+    const [sorting, setSorting] = useState<SortingState>([]);
+
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [selectedProduct, setSelectedProduct] = useState<Products | undefined>(undefined);
 
     const columns = useMemo<ColumnDef<Products>[]>(
         () => [
-            { accessorKey: 'reference', header: 'Referencia' },
-            { accessorKey: 'product_name', header: 'Nombre' },
+            {   
+                accessorKey: 'reference',
+                header: ({ column }) => (
+                    <SortableHeader column={column} label="Referencia" />
+                ),
+            },
+            
+            { accessorKey: 'product_name', 
+                header: ({ column }) => (
+                    <SortableHeader column={column} label="Nombre" />
+                ),
+            },
             {
                 accessorKey: 'price',
-                header: 'Precio',
+                header: ({ column }) => (
+                    <SortableHeader column={column} label="Precio" />
+                ),
+                enableSorting: true,
                 cell: ({ getValue }) => {
                     const value = getValue<number>();
                     return `$ ${Math.floor(value).toLocaleString()}`;
-                }
+                },
             },
             {
                 accessorKey: 'color',
@@ -61,13 +82,48 @@ export default function Products() {
                     </div>
                 ),
             },
-            { accessorKey: 'size_S', header: 'Talla S' },
-            { accessorKey: 'size_M', header: 'Talla M' },
-            { accessorKey: 'size_L', header: 'Talla L' },
-            { accessorKey: 'size_XL', header: 'Talla XL' },
-            { accessorKey: 'size_2XL', header: 'Talla 2XL' },
-            { accessorKey: 'size_3XL', header: 'Talla 3XL' },
-            { accessorKey: 'size_4XL', header: 'Talla 4XL' },
+            { 
+                accessorKey: 'size_S', 
+                header: ({ column }) => (
+                    <SortableHeader column={column} label="Talla S" />
+                ),
+            },
+            { 
+                accessorKey: 'size_M',  
+                header: ({ column }) => (
+                    <SortableHeader column={column} label="Talla M" />
+                ),
+            },
+            { 
+                accessorKey: 'size_L',  
+                header: ({ column }) => (
+                    <SortableHeader column={column} label="Talla L" />
+                ),
+            },
+            { 
+                accessorKey: 'size_XL',  
+                header: ({ column }) => (
+                    <SortableHeader column={column} label="Talla XL" />
+                ),
+            },
+            { 
+                accessorKey: 'size_2XL',  
+                header: ({ column }) => (
+                    <SortableHeader column={column} label="Talla 2XL" />
+                ),
+            },
+            { 
+                accessorKey: 'size_3XL',  
+                header: ({ column }) => (
+                    <SortableHeader column={column} label="Talla 3XL" />
+                ),
+            },
+            { 
+                accessorKey: 'size_4XL',  
+                header: ({ column }) => (
+                    <SortableHeader column={column} label="Talla 4XL" />
+                ),
+            },
             {
                 accessorKey: 'status',
                 header: 'Estado',
@@ -75,7 +131,7 @@ export default function Products() {
                     const status = getValue() as boolean | number;
                     return (
                         <span
-                            className={`px-3 py-1 rounded-full text-xs font-semibold
+                            className={`px-3 py-1 rounded-full text-base sm:text-md font-semibold
                                 ${status ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}
                             `}
                         >
@@ -118,10 +174,12 @@ export default function Products() {
         columns,
         state: {
             globalFilter,
+            sorting,
         },
-        onGlobalFilterChange: setGlobalFilter,
+        onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
     });
 
@@ -135,14 +193,14 @@ export default function Products() {
                     <input
                         type="text"
                         placeholder="Buscar..."
-                        className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-72 text-sm"
+                        className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-72 text-base sm:text-lg"
                         value={globalFilter}
                         onChange={e => setGlobalFilter(e.target.value)}
                     />
 
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary transition text-sm w-full sm:w-auto"
+                        className="bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary transition text-base sm:text-lg w-full sm:w-auto"
                     >
                         Registrar Producto
                     </button>
@@ -150,7 +208,7 @@ export default function Products() {
                 {!loading && !error && (
                     <>
                         <div className="w-full overflow-x-auto rounded shadow border border-gray-200">
-                            <table className="min-w-[1000px] w-full bg-white text-left text-sm sm:text-base table-auto">
+                            <table className="min-w-[1000px] w-full bg-white text-left text-base sm:text-lg table-auto">
                                 <thead className="bg-purple-100">
                                     {table.getHeaderGroups().map(headerGroup => (
                                         <tr key={headerGroup.id}>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -26,7 +27,9 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        try {
+        try {   
+
+            DB::beginTransaction();
 
             $messages = [
                 'required' => 'El campo :attribute es requerido.',
@@ -87,9 +90,12 @@ class ProductController extends Controller
                     'status' => $status,
                 ]);
 
+                DB::commit();
+
                 return response()->json(['message' => 'Producto Registrado Correctamente', 'Producto' => $product], 201);
             }
         } catch (QueryException $e) {
+            DB::rollBack();
             $errorMessage = $e->getMessage();
             return response()->json(['message' => $errorMessage], 400);
         }
@@ -114,6 +120,9 @@ class ProductController extends Controller
     public function update(Request $request, string $id)
     {
         try {
+
+            DB::beginTransaction();
+
             $product = Product::find($id);
 
             if (!$product) {
@@ -179,16 +188,19 @@ class ProductController extends Controller
                     'status' => $status ?? 1,
                 ]);
 
+                DB::commit();
+
                 return response()->json(['message' => 'Producto actualizado correctamente', 'Producto' => $product]);
             }
         } catch (QueryException $e) {
+            DB::rollBack();
             $errorMessage = $e->getMessage();
             return response()->json(['message' => $errorMessage], 400);
         }
     }
 
     public function destroy(string $id)
-    {
+    {   
         $product = Product::find($id);
 
         if (!$product) {

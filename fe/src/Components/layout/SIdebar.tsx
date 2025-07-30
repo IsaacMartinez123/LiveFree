@@ -167,7 +167,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
                                     </button>
                                 </li>
                                 <li>
-                                    <button className="pl-6 py-2 text-form-label hover:text-primary-dark">
+                                    <button 
+                                        className="pl-6 py-2 text-form-label hover:text-primary-dark"
+                                        onClick={() => {
+                                            navigate("/payments");
+                                        }}
+                                    >
                                         Abonos
                                     </button>
                                 </li>
