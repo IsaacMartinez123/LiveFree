@@ -20,7 +20,7 @@ type ProductData = {
     size_2XL: number;
     size_3XL: number;
     size_4XL: number;
-    status: boolean;
+    status: string;
 };
 
 type Props = {

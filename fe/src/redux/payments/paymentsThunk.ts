@@ -1,12 +1,13 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
 import { paymentDetailData } from '../../Components/sections/payments/AddPayment';
+import { FetchSalesParams } from '../../pages/sales/Sales';
 
 export const fetchPayments = createAsyncThunk(
     'payments/fetchPayments',
-    async (_, thunkAPI) => {
+    async (params: FetchSalesParams = {}, thunkAPI) => {
         try {
-            const response = await api.get('/payments');
+            const response = await api.get('/payments', { params });
             return response.data;
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error.response?.data?.message || 'Error al obtener pagos');

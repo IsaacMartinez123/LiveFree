@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('invoice_number')->unique();
             $table->decimal('total_debt', 10, 2);
             $table->decimal('total_payment', 10, 2);
-            $table->boolean('status');
+            $table->enum('status', ['pendiente', 'pagado', 'cancelado'])->default('pendiente');
         });
     }
 

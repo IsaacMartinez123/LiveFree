@@ -11,21 +11,31 @@ use Illuminate\Support\Facades\Validator;
 class PaymentController extends Controller
 {
 
+
     public function index()
     {
         try {
-            $payments = Payment::with([
+            $query = Payment::with([
                 'client:id,name',
                 'paymentDetails'
-            ])->select('id', 'sales_id', 'client_id', 'invoice_number', 'total_debt', 'total_payment', 'status')
-                ->get();
+            ])->select('id', 'sales_id', 'client_id', 'invoice_number', 'total_debt', 'total_payment', 'status');
+
+
+            if (request()->filled('status')) {
+                $query->where('status', request('status'));
+            }
+
+            $payments = $query->get()->map(function ($payment) {
+                $payment->client_name = $payment->client?->name;
+                return $payment;
+            });
 
             return response()->json($payments);
         } catch (QueryException $e) {
-            $errorMessage = $e->getMessage();
-            return response()->json(['message' => $errorMessage], 400);
+            return response()->json(['message' => $e->getMessage()], 400);
         }
     }
+
 
 
     public function update(Request $request, string $id)
@@ -51,7 +61,7 @@ class PaymentController extends Controller
                 'paymentDetailData.*.payment_method' => 'required|string|max:255',
                 'paymentDetailData.*.date' => 'required|date_format:Y-m-d',
                 'paymentDetailData.*.observations' => 'nullable|string|max:255',
-                
+
             ], $messages);
 
             if ($validator->fails()) {
@@ -73,7 +83,7 @@ class PaymentController extends Controller
 
             $payment->total_payment = $totalPayment;
 
-            $payment->status = $totalPayment >= $payment->total_debt ? true : false;
+            $payment->status = $totalPayment >= $payment->total_debt ? 'pagado' : 'pendiente';
 
             $payment->save();
 

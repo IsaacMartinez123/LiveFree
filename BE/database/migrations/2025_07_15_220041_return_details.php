@@ -21,7 +21,6 @@ return new class extends Migration
             $table->integer('size_3XL')->default(0);
             $table->integer('size_4XL')->default(0);
             
-            $table->text('reason')->nullable();
         });
     }
 

@@ -73,7 +73,7 @@ class ProductController extends Controller
                     $size_2XL == 0 &&
                     $size_3XL == 0 &&
                     $size_4XL == 0
-                ) ? 0 : 1;
+                ) ? 'agotado' : 'disponible';
 
                 $product = Product::create([
                     'reference' => $request->reference,
@@ -171,7 +171,7 @@ class ProductController extends Controller
                     $size_2XL == 0 &&
                     $size_3XL == 0 &&
                     $size_4XL == 0
-                ) ? 0 : 1;
+                ) ? 'agotado' : 'disponible';
 
                 $product->update([
                     'reference' => $request->reference,

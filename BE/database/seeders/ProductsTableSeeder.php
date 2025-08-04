@@ -24,7 +24,7 @@ class ProductsTableSeeder extends Seeder
             'size_2XL' => 0,
             'size_3XL' => 0,
             'size_4XL' => 0,
-            'status' => true,
+            'status' => 'disponible',
         ]);
         Product::create([
             'reference' => 'REF002',
@@ -38,7 +38,7 @@ class ProductsTableSeeder extends Seeder
             'size_2XL' => 0,
             'size_3XL' => 0,
             'size_4XL' => 0,
-            'status' => true,
+            'status' => 'disponible',
         ]);
         Product::create([
             'reference' => 'REF003',
@@ -52,7 +52,7 @@ class ProductsTableSeeder extends Seeder
             'size_2XL' => 1,
             'size_3XL' => 0,
             'size_4XL' => 0,
-            'status' => true,
+            'status' => 'disponible',
         ]);
         Product::create([
             'reference' => 'REF004',
@@ -66,7 +66,7 @@ class ProductsTableSeeder extends Seeder
             'size_2XL' => 1,
             'size_3XL' => 0,
             'size_4XL' => 0,
-            'status' => true,
+            'status' => 'disponible',
         ]);
         Product::create([
             'reference' => 'REF005',
@@ -80,7 +80,7 @@ class ProductsTableSeeder extends Seeder
             'size_2XL' => 2,
             'size_3XL' => 1,
             'size_4XL' => 0,
-            'status' => true,
+            'status' => 'disponible',
         ]);
         Product::create([
             'reference' => 'REF006',
@@ -94,7 +94,7 @@ class ProductsTableSeeder extends Seeder
             'size_2XL' => 0,
             'size_3XL' => 0,
             'size_4XL' => 0,
-            'status' => true,
+            'status' => 'disponible',
         ]);
         Product::create([
             'reference' => 'REF007',
@@ -108,7 +108,7 @@ class ProductsTableSeeder extends Seeder
             'size_2XL' => 1,
             'size_3XL' => 1,
             'size_4XL' => 0,
-            'status' => true,
+            'status' => 'disponible',
         ]);
         Product::create([
             'reference' => 'REF008',
@@ -122,7 +122,7 @@ class ProductsTableSeeder extends Seeder
             'size_2XL' => 1,
             'size_3XL' => 0,
             'size_4XL' => 0,
-            'status' => true,
+            'status' => 'disponible',
         ]);
         Product::create([
             'reference' => 'REF009',
@@ -136,7 +136,7 @@ class ProductsTableSeeder extends Seeder
             'size_2XL' => 1,
             'size_3XL' => 1,
             'size_4XL' => 1,
-            'status' => true,
+            'status' => 'disponible',
         ]);
         Product::create([
             'reference' => 'REF010',
@@ -150,7 +150,7 @@ class ProductsTableSeeder extends Seeder
             'size_2XL' => 2,
             'size_3XL' => 1,
             'size_4XL' => 1,
-            'status' => true,
+            'status' => 'disponible',
         ]);
     }
 }

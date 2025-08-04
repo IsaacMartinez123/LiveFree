@@ -37,13 +37,6 @@ class SalesTableSeeder extends Seeder
             'size_3XL' => 0,
             'size_4XL' => 0,
             'sub_total' => 60000,
-            'returned_S' => 0,
-            'returned_M' => 0,
-            'returned_L' => 0,
-            'returned_XL' => 0,
-            'returned_2XL' => 0,
-            'returned_3XL' => 0,
-            'returned_4XL' => 0,
         ]);
         SalesDetail::create([
             'sale_id' => $sale1->id,
@@ -60,13 +53,6 @@ class SalesTableSeeder extends Seeder
             'size_3XL' => 0,
             'size_4XL' => 0,
             'sub_total' => 80000,
-            'returned_S' => 0,
-            'returned_M' => 0,
-            'returned_L' => 0,
-            'returned_XL' => 0,
-            'returned_2XL' => 0,
-            'returned_3XL' => 0,
-            'returned_4XL' => 0,
         ]);
 
         // Venta 2
@@ -93,13 +79,6 @@ class SalesTableSeeder extends Seeder
             'size_3XL' => 0,
             'size_4XL' => 0,
             'sub_total' => 16000,
-            'returned_S' => 0,
-            'returned_M' => 0,
-            'returned_L' => 0,
-            'returned_XL' => 0,
-            'returned_2XL' => 0,
-            'returned_3XL' => 0,
-            'returned_4XL' => 0,
         ]);
     }
 }

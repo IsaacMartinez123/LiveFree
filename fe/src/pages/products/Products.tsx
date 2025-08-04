@@ -32,7 +32,7 @@ export type Products = {
     size_2XL: number;
     size_3XL: number;
     size_4XL: number;
-    status: boolean;
+    status: string;
 };
 
 
@@ -128,14 +128,21 @@ export default function Products() {
                 accessorKey: 'status',
                 header: 'Estado',
                 cell: ({ getValue }) => {
-                    const status = getValue() as boolean | number;
+                    const status = getValue() as string | undefined;
+                    if (!status) {
+                        return <span className="text-gray-400">-</span>;
+                    }
                     return (
                         <span
-                            className={`px-3 py-1 rounded-full text-base sm:text-md font-semibold
-                                ${status ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}
+                            className={`px-3 py-1 rounded-full text-base sm:text-lg font-semibold
+                                ${status === 'agotado' ? 'bg-yellow-100 text-yellow-700' :
+                                    status === 'disponible' ? 'bg-green-100 text-green-700' :
+                                        status === 'sobrevendido' ? 'bg-red-100 text-red-700' : ''
+                                            
+                                }
                             `}
                         >
-                            {status ? 'Disponible' : 'Agotado'}
+                            {status.charAt(0).toUpperCase() + status.slice(1)}
                         </span>
                     );
                 }

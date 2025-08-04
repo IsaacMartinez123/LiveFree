@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('size_2XL');
             $table->integer('size_3XL');
             $table->integer('size_4XL');
-            $table->boolean('status')->default(true);
+            $table->enum('status', ['disponible', 'agotado', 'sobrevendido'])->default('disponible');
         });
     }
 

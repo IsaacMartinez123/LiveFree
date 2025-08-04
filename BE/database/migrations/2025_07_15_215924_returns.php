@@ -13,7 +13,12 @@ return new class extends Migration
             $table->foreignId('sale_id')->constrained('sales')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users');
             $table->date('date');
-            $table->text('reason')->nullable();
+            $table->enum('reason', [
+                'Defecto de fabricación',
+                'Producto incorrecto',
+                'Producto dañado'
+            ]);
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

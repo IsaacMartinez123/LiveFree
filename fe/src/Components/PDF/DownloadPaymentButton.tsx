@@ -1,19 +1,19 @@
 import { PDFDownloadLink } from '@react-pdf/renderer';
-import { InvoicePDF } from './InvoicePDF';
 import { DocumentDownload } from 'iconsax-reactjs';
-import { Sales } from '../../pages/sales/Sales';
+import { Payment } from '../../pages/payments/Payments';
+import PaymentDetailPDF from './PaymentDetailPDF';
 
-const DownloadInvoiceButton = ({ sale }: { sale: Sales }) => {
+const DownloadPaymentButton = ({ payment }: { payment: Payment }) => {
     return (
         <PDFDownloadLink
-            document={<InvoicePDF sale={sale} />}
-            fileName={`Factura-${sale.invoice_number}-${sale?.client?.name || 'Cliente no asignado'}.pdf`}
+            document={<PaymentDetailPDF payment={payment} />}
+            fileName={`Abono-${payment.invoice_number}-${payment.client.name}.pdf`}
         >
             {({ loading }) =>
                 loading ? (
                     <span className="text-gray-400 text-sm">Generando PDF...</span>
                 ) : (
-                    <span title="Descargar Factura">
+                    <span title="Descargar Abono">
                         <DocumentDownload size={25} color="#8a0000ff" />
                     </span>
                 )
@@ -22,4 +22,4 @@ const DownloadInvoiceButton = ({ sale }: { sale: Sales }) => {
     );
 };
 
-export default DownloadInvoiceButton;
+export default DownloadPaymentButton;

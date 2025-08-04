@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { ArrowCircleLeft, ArrowCircleRight, Edit, Trash } from 'iconsax-reactjs';
 import { deleteClient, fetchClients } from '../../redux/clients/clientsThunk';
 import AddClient from '../../Components/sections/clients/AddClient';
+import DownloadCustomerLabelButton from '../../Components/PDF/DownloadCustomerLabelButton';
 
 export type Client = {
     id: number;
@@ -57,13 +58,14 @@ export default function Clients() {
                         >
                             <Edit size="20" color="#7E22CE" />
                         </button>
-                        <button
+                        {/* <button
                             onClick={() => setShowConfirm({ open: true, id: row.original.id })}
                             className="text-sm text-red-600 hover:underline"
                             title="Eliminar"
                         >
                             <Trash size="20" color="#dc2626" />
-                        </button>
+                        </button> */}
+                        <DownloadCustomerLabelButton client={row.original} />
                     </div>
                 ),
             },

@@ -10,12 +10,37 @@ import { Image } from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
     page: { padding: 40, fontSize: 10, fontFamily: 'Helvetica' },
-    title: { fontSize: 18, marginBottom: 20, textAlign: 'center', fontWeight: 'bold' },
 
-    infoRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 },
-    infoBlock: { width: '48%' },
-    label: { fontWeight: 'bold' },
-    value: { marginBottom: 4 },
+    headerContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 20,
+    },
+    leftColumn: {
+        width: '40%',
+        justifyContent: 'flex-start',
+    },
+    rightColumn: {
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+
+    },
+    logo: {
+        width: 80,
+        height: 80,
+    },
+    invoiceTitle: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        marginBottom: 4,
+        textAlign: 'right',
+    },
+    textLine: {
+        fontSize: 10,
+        marginBottom: 2,
+        textAlign: 'right',
+        paddingBottom: 2,
+    },
 
     sectionTitle: { fontSize: 12, marginTop: 20, marginBottom: 8, fontWeight: 'bold' },
 
@@ -44,6 +69,13 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: 'bold',
     },
+    headerRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+
 
 });
 
@@ -109,32 +141,35 @@ export const InvoicePDF = ({ sale }: { sale: Sales }) => {
 
     return (
         <Document>
-            <Page size="A4" style={styles.page}>
-                <View style={{ textAlign: 'center', marginBottom: 20 }}>
-                    <Image
-                        src="/livefreelogo.png"
-                        style={{ width: 100, height: 100, marginBottom: 10, alignSelf: 'center' }}
-                    />
+            <Page size={[612, 396]} style={styles.page}>
 
-                    <Text style={styles.title}>Factura #{sale?.invoice_number}</Text>
+                <View style={styles.headerContainer}>
+                    <View style={styles.leftColumn}>
+                        <Text style={styles.invoiceTitle}>Factura #{sale?.invoice_number}</Text>
+
+                        <Text style={styles.textLine}>
+                            <Text style={{ fontWeight: 'bold' }}>Cliente: </Text>{sale.client?.name}
+                        </Text>
+
+                        <Text style={styles.textLine}>
+                            <Text style={{ fontWeight: 'bold' }}>Vendedor (Código): </Text>{sale.seller?.seller_code}
+                        </Text>
+
+                        <Text style={styles.textLine}>
+                            <Text style={{ fontWeight: 'bold' }}>Fecha De Factura: </Text>{formatDate(sale?.created_at)}
+                        </Text>
+
+                        <Text style={styles.textLine}>
+                            <Text style={{ fontWeight: 'bold' }}>Vencimiento(30 días): </Text>{formatDate(dueDate)}
+                        </Text>
+                    </View>
+
+                    <View style={styles.rightColumn}>
+                        <Image src="/livefreelogo.png" style={styles.logo} />
+                    </View>
                 </View>
 
-                <View style={styles.infoRow}>
-                    <View style={styles.infoBlock}>
-                        <Text style={styles.label}>Cliente:</Text>
-                        <Text style={styles.value}>{sale.client?.name}</Text>
 
-                        <Text style={styles.label}>Vendedor (Código):</Text>
-                        <Text style={styles.value}>{sale.seller?.seller_code}</Text>
-                    </View>
-                    <View style={styles.infoBlock}>
-                        <Text style={styles.label}>Fecha:</Text>
-                        <Text style={styles.value}>{formatDate(sale?.created_at)}</Text>
-                        <Text style={styles.label}>Vencimiento:</Text>
-                        <Text style={styles.value}>{formatDate(dueDate)}</Text>
-
-                    </View>
-                </View>
 
                 <Text style={styles.sectionTitle}>Productos vendidos</Text>
 

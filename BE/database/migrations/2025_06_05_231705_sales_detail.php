@@ -27,15 +27,7 @@ return new class extends Migration
             $table->integer('size_3XL');
             $table->integer('size_4XL');
             $table->integer('sub_total');
-
-            // Campos auxiliares para devoluciones
-            $table->integer('returned_S')->default(0);
-            $table->integer('returned_M')->default(0);
-            $table->integer('returned_L')->default(0);
-            $table->integer('returned_XL')->default(0);
-            $table->integer('returned_2XL')->default(0);
-            $table->integer('returned_3XL')->default(0);
-            $table->integer('returned_4XL')->default(0);
+            
             $table->timestamps();
         });
     }

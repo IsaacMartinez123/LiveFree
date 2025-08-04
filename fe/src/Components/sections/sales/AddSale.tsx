@@ -7,15 +7,15 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { fetchClients } from '../../../redux/clients/clientsThunk';
 import { fetchProducts } from '../../../redux/products/productsThunk';
 import { CloseCircle } from 'iconsax-reactjs';
-import { SaleDetail } from '../../../pages/sales/Sales';
+import { SaleDetail, Sales } from '../../../pages/sales/Sales';
 import { fetchSellers } from '../../../redux/sellers/sellersThunk';
-import { createSale } from '../../../redux/sales/salesThunk';
+import { createSale, updateSale } from '../../../redux/sales/salesThunk';
 import Select from 'react-select';
 
 
 type SalesFormValues = {
-    client_id: string;
-    seller_id: string;
+    client_id: number;
+    seller_id: number;
     items: SaleDetail[];
 };
 
@@ -23,10 +23,33 @@ type Props = {
     isOpen: boolean;
     onClose: () => void;
     onSubmitSuccess: () => void;
-    sale?: any;
+    sale?: Sales;
 };
 
-export default function AddSale({ isOpen, onClose, onSubmitSuccess }: Props) {
+export const mapSaleToFormValues = (sale: Sales): SalesFormValues => {
+    return {
+        seller_id: sale.seller_id,
+        client_id: sale.client_id,
+        items: sale.sales_details.map((detail) => ({
+            id: detail.id,
+            sale_id: detail.sale_id,
+            product_id: detail.product_id,
+            reference: detail.reference,
+            product_name: detail.product_name,
+            price: detail.price,
+            color: detail.color,
+            size_S: detail.size_S,
+            size_M: detail.size_M,
+            size_L: detail.size_L,
+            size_XL: detail.size_XL,
+            size_2XL: detail.size_2XL,
+            size_3XL: detail.size_3XL,
+            size_4XL: detail.size_4XL,
+        })),
+    };
+};
+
+export default function AddSale({ isOpen, onClose, onSubmitSuccess, sale }: Props) {
     const dispatch = useAppDispatch();
     const { clients } = useAppSelector(state => state.clients);
     const { products } = useAppSelector(state => state.products);
@@ -38,11 +61,19 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess }: Props) {
         dispatch(fetchSellers());
     }, [dispatch]);
 
-    const initialValues = useMemo(() => ({
-        seller_id: '',
-        client_id: '',
-        items: [],
-    }), []);
+
+    const initialValues: SalesFormValues = useMemo(() => {
+        if (sale) {
+            return mapSaleToFormValues(sale);
+        }
+        return {
+            seller_id: 0,
+            client_id: 0,
+            items: [],
+        };
+    }, [sale]);
+
+
 
     const validationSchema = Yup.object({
         client_id: Yup.string().required('Seleccione un cliente'),
@@ -50,10 +81,17 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess }: Props) {
         items: Yup.array().min(1, 'Debe agregar al menos un producto'),
     });
 
+
     const handleSubmit = async (values: any, { resetForm }: any) => {
         try {
-            const response = await dispatch(createSale(values)).unwrap();
-            toast.success(response.message || 'Venta registrada correctamente');
+            if (sale) {                
+                const response = await dispatch(updateSale({ id: sale.id, saleDetailData: values })).unwrap();
+                toast.success(response.message || 'Venta actualizada correctamente');
+            } else {
+                const response = await dispatch(createSale(values)).unwrap();
+                toast.success(response.message || 'Venta registrada correctamente');
+            }
+
             resetForm();
             onSubmitSuccess();
             onClose();
@@ -62,6 +100,7 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess }: Props) {
             toast.error(apiMessage || 'Error al guardar la venta');
         }
     };
+
 
     const clientOptions = clients.map(client => ({
         value: client.id,
@@ -73,14 +112,7 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess }: Props) {
         label: seller.name,
     }));
 
-    const normalizedProducts = products.map(product => ({
-        ...product,
-        status: Number(product.status)
-    }));
-
-    const productsAvailable = normalizedProducts.filter(p => p.status === 1); 
-
-    const productOptions = productsAvailable.map(product => ({
+    const productOptions = products.map(product => ({
         value: product.id,
         label: `${product.reference} - ${product.product_name}`,
         ...product,
@@ -138,8 +170,9 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess }: Props) {
                     >
                         <Dialog.Panel className="bg-white rounded-lg p-6 sm:p-8 w-full max-w-screen-3xl shadow-lg my-4">
                             <Dialog.Title className="text-xl font-bold text-primary mb-6 text-center">
-                                Registrar Venta
+                                {sale ? 'Editar Venta' : 'Registrar Venta'}
                             </Dialog.Title>
+
 
                             <Formik
                                 initialValues={initialValues}
@@ -171,7 +204,7 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess }: Props) {
                                                 <Select
                                                     options={clientOptions}
                                                     value={clientOptions.find(option => option.value === Number(values.client_id))}
-                                                    onChange={option => setFieldValue('client_id', option?.value || '')}
+                                                    onChange={option => setFieldValue('client_id', option?.value || 0)}
                                                     placeholder="Seleccione un cliente"
                                                     className="mb-2"
                                                     styles={customSelectStyles}
@@ -192,7 +225,7 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess }: Props) {
                                                 <Select
                                                     options={sellerOptions}
                                                     value={sellerOptions.find(option => option.value === Number(values.seller_id))}
-                                                    onChange={option => setFieldValue('seller_id', option?.value || '')}
+                                                    onChange={option => setFieldValue('seller_id', option?.value || 0)}
                                                     placeholder="Seleccione un vendedor"
                                                     className="mb-2 "
                                                     styles={customSelectStyles}
@@ -335,8 +368,9 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess }: Props) {
                                                     Cancelar
                                                 </button>
                                                 <button type="submit" className="bg-primary text-white px-6 py-2 rounded hover:bg-primary-dark">
-                                                    Registrar Venta
+                                                    {sale ? 'Actualizar Venta' : 'Registrar Venta'}
                                                 </button>
+
                                             </div>
                                         </Form>
                                     );
