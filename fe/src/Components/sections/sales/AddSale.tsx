@@ -50,6 +50,7 @@ export const mapSaleToFormValues = (sale: Sales): SalesFormValues => {
 };
 
 export default function AddSale({ isOpen, onClose, onSubmitSuccess, sale }: Props) {
+
     const dispatch = useAppDispatch();
     const { clients } = useAppSelector(state => state.clients);
     const { products } = useAppSelector(state => state.products);
@@ -57,7 +58,7 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess, sale }: Prop
 
     useEffect(() => {
         dispatch(fetchClients());
-        dispatch(fetchProducts());
+        dispatch(fetchProducts({ status: '' }));
         dispatch(fetchSellers());
     }, [dispatch]);
 
@@ -84,7 +85,7 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess, sale }: Prop
 
     const handleSubmit = async (values: any, { resetForm }: any) => {
         try {
-            if (sale) {                
+            if (sale) {
                 const response = await dispatch(updateSale({ id: sale.id, saleDetailData: values })).unwrap();
                 toast.success(response.message || 'Venta actualizada correctamente');
             } else {
@@ -109,7 +110,7 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess, sale }: Prop
     }));
     const sellerOptions = sellers.map(seller => ({
         value: seller.id,
-        label: seller.name,
+        label: `${seller.seller_code} - ${seller.name}`
     }));
 
     const productOptions = products.map(product => ({
@@ -121,20 +122,20 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess, sale }: Prop
     const customSelectStyles = {
         control: (provided: any, state: any) => ({
             ...provided,
-            borderColor: '#d1d5db', // mismo color que input-form (tailwind: border-gray-300)
-            boxShadow: state.isFocused ? '0 0 0 1.5px #7e22ce' : provided.boxShadow, // ejemplo: color primario al enfocar
+            borderColor: '#d1d5db',
+            boxShadow: state.isFocused ? '0 0 0 1.5px #7e22ce' : provided.boxShadow,
             '&:hover': {
-                borderColor: '#7e22ce', // color al pasar mouse por el borde
+                borderColor: '#7e22ce',
             },
-            borderRadius: '0.375rem', // igual que input-form rounded-md
+            borderRadius: '0.375rem',
             minHeight: '2.5rem',
         }),
         option: (provided: any, state: any) => ({
             ...provided,
             backgroundColor: state.isFocused
-                ? '#ede9fe' // tailwind: bg-purple-100
+                ? '#ede9fe'
                 : 'white',
-            color: state.isFocused ? '#7e22ce' : '#111827', // tailwind: text-primary o text-gray-900
+            color: state.isFocused ? '#7e22ce' : '#111827',
             cursor: 'pointer',
         }),
         menu: (provided: any) => ({
@@ -238,12 +239,12 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess, sale }: Prop
                                                     onChange={option => {
                                                         if (
                                                             option &&
-                                                            !values.items.some(item => item.id === option.value)
+                                                            !values.items.some(item => item.product_id === option.value)
                                                         ) {
                                                             setFieldValue('items', [
                                                                 ...values.items,
                                                                 {
-                                                                    id: option.value,
+                                                                    id: option.id ?? 0,
                                                                     product_id: option.value,
                                                                     reference: option.reference,
                                                                     product_name: option.product_name,
@@ -333,7 +334,26 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess, sale }: Prop
                                                                                         />
                                                                                     </td>
                                                                                 ))}
-                                                                                <td className="px-4 py-2 border text-base">${Number(item.price).toLocaleString()}</td>
+                                                                                {/* <td className="px-4 py-2 border text-base">${Number(item.price).toLocaleString()}</td> */}
+                                                                                <td className="px-4 py-2 border">
+                                                                                    <Field name={`items[${index}].price`}>
+                                                                                        {({ field, form }: any) => (
+                                                                                            <input
+                                                                                                {...field}
+                                                                                                type="number"
+                                                                                                min="0"
+                                                                                                step="1"
+                                                                                                className="w-20 text-center border rounded text-base"
+                                                                                                onChange={(e) => {
+                                                                                                    const value = parseInt(e.target.value, 10);
+                                                                                                    form.setFieldValue(field.name, isNaN(value) ? '' : value);
+                                                                                                }}
+                                                                                            />
+                                                                                        )}
+                                                                                    </Field>
+
+                                                                                </td>
+
                                                                                 <td className="px-4 py-2 border text-base font-semibold">
                                                                                     ${subtotal.toLocaleString()}
                                                                                 </td>

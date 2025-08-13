@@ -18,6 +18,8 @@ import { ArrowCircleLeft, ArrowCircleRight, Edit } from 'iconsax-reactjs';
 import { fetchProducts } from '../../redux/products/productsThunk';
 import AddProduct from '../../Components/sections/products/AddProduct';
 import { SortableHeader } from '../../Components/layout/SortableHeader';
+import { FetchParams } from '../sales/Sales';
+import { SelectStatusFilter } from '../../Components/layout/SelectStatusFilter';
 
 export type Products = {
     id: number;
@@ -35,6 +37,13 @@ export type Products = {
     status: string;
 };
 
+const stateSales = [
+    { value: '', label: 'Todos' },
+    { value: 'disponible', label: 'Disponible' },
+    { value: 'agotado', label: 'Agotado' },
+    { value: 'sobrevendido', label: 'Sobrevendido' },
+];
+
 
 export default function Products() {
     const [globalFilter, setGlobalFilter] = useState('');
@@ -45,16 +54,22 @@ export default function Products() {
 
     const [selectedProduct, setSelectedProduct] = useState<Products | undefined>(undefined);
 
+    const [statusFilter, setStatusFilter] = useState('');
+
+    const [params, setParams] = useState<FetchParams>({ status: '' });
+
+
     const columns = useMemo<ColumnDef<Products>[]>(
         () => [
-            {   
+            {
                 accessorKey: 'reference',
                 header: ({ column }) => (
                     <SortableHeader column={column} label="Referencia" />
                 ),
             },
-            
-            { accessorKey: 'product_name', 
+
+            {
+                accessorKey: 'product_name',
                 header: ({ column }) => (
                     <SortableHeader column={column} label="Nombre" />
                 ),
@@ -82,44 +97,44 @@ export default function Products() {
                     </div>
                 ),
             },
-            { 
-                accessorKey: 'size_S', 
+            {
+                accessorKey: 'size_S',
                 header: ({ column }) => (
                     <SortableHeader column={column} label="Talla S" />
                 ),
             },
-            { 
-                accessorKey: 'size_M',  
+            {
+                accessorKey: 'size_M',
                 header: ({ column }) => (
                     <SortableHeader column={column} label="Talla M" />
                 ),
             },
-            { 
-                accessorKey: 'size_L',  
+            {
+                accessorKey: 'size_L',
                 header: ({ column }) => (
                     <SortableHeader column={column} label="Talla L" />
                 ),
             },
-            { 
-                accessorKey: 'size_XL',  
+            {
+                accessorKey: 'size_XL',
                 header: ({ column }) => (
                     <SortableHeader column={column} label="Talla XL" />
                 ),
             },
-            { 
-                accessorKey: 'size_2XL',  
+            {
+                accessorKey: 'size_2XL',
                 header: ({ column }) => (
                     <SortableHeader column={column} label="Talla 2XL" />
                 ),
             },
-            { 
-                accessorKey: 'size_3XL',  
+            {
+                accessorKey: 'size_3XL',
                 header: ({ column }) => (
                     <SortableHeader column={column} label="Talla 3XL" />
                 ),
             },
-            { 
-                accessorKey: 'size_4XL',  
+            {
+                accessorKey: 'size_4XL',
                 header: ({ column }) => (
                     <SortableHeader column={column} label="Talla 4XL" />
                 ),
@@ -138,7 +153,7 @@ export default function Products() {
                                 ${status === 'agotado' ? 'bg-yellow-100 text-yellow-700' :
                                     status === 'disponible' ? 'bg-green-100 text-green-700' :
                                         status === 'sobrevendido' ? 'bg-red-100 text-red-700' : ''
-                                            
+
                                 }
                             `}
                         >
@@ -173,7 +188,7 @@ export default function Products() {
 
 
     useEffect(() => {
-        dispatch(fetchProducts());
+        dispatch(fetchProducts(params));
     }, [dispatch]);
 
     const table = useReactTable({
@@ -196,6 +211,19 @@ export default function Products() {
             {error && <div className="text-center text-red-500">Error: {error}</div>}
 
             <div className="p-4 sm:p-6">
+                <div className="mb-4">
+                    <SelectStatusFilter
+                        value={statusFilter}
+                        onChange={
+                            (value) => {
+                                setStatusFilter(value);
+                                setParams({ status: value });
+                                dispatch(fetchProducts({ status: value }));
+                            }
+                        }
+                        options={stateSales}
+                    />
+                </div>
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
                     <input
                         type="text"
@@ -276,7 +304,7 @@ export default function Products() {
                     setSelectedProduct(undefined);
                 }}
                 onSubmitSuccess={() => {
-                    dispatch(fetchProducts());
+                    dispatch(fetchProducts(params));
                     setSelectedProduct(undefined);
                 }}
                 product={selectedProduct}

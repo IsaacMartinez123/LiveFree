@@ -20,6 +20,8 @@ import AddSale from '../../Components/sections/sales/AddSale';
 import DownloadInvoiceButton from '../../Components/PDF/DownloadInvoiceButton';
 import { SortableHeader } from '../../Components/layout/SortableHeader';
 import { SelectStatusFilter } from '../../Components/layout/SelectStatusFilter';
+import { fetchProducts } from '../../redux/products/productsThunk';
+import ModalAlert from '../../Components/layout/ModalAlert';
 // import AddProduct from '../../Components/sections/products/AddProduct';
 
 export type SaleDetail = {
@@ -55,7 +57,7 @@ export type Sales = {
     created_at: string;
 };
 
-export type FetchSalesParams = {
+export type FetchParams = {
     status?: string;
 };
 
@@ -81,7 +83,13 @@ export default function Sales() {
 
     const [statusFilter, setStatusFilter] = useState('');
 
-    const [params, setParams] = useState<FetchSalesParams>({ status: '' });
+    const [params, setParams] = useState<FetchParams>({ status: '' });
+
+    const [stateSale, setStateSale] = useState<boolean>();
+
+    const [isOpneWarning, setIsOpneWarning] = useState<boolean>(false);
+
+    const [oversold, setOversold] = useState<{ id: number; ref: string }[]>([]);
 
 
     const columns = useMemo<ColumnDef<Sales>[]>(
@@ -206,10 +214,12 @@ export default function Sales() {
                                         .then((res) => {
                                             toast.success(res.message || 'Venta despachada con éxito');
                                             dispatch(fetchSales(params));
+                                            setStateSale(true)
                                         })
                                         .catch((errorMessage) => {
                                             toast.error(errorMessage || 'Hubo un error al despachar la venta');
                                             dispatch(fetchSales(params));
+
                                         });
                                 }}
                                 className="text-blue-600 hover:text-blue-800"
@@ -241,12 +251,31 @@ export default function Sales() {
     const dispatch = useAppDispatch();
     const { sales, loading, error } = useAppSelector(state => state.sales);
 
-    const data = useMemo(() => [...sales].reverse(), [sales]);
+    const { products } = useAppSelector(state => state.products)
 
+    const data = useMemo(() => [...sales].reverse(), [sales]);
 
     useEffect(() => {
         dispatch(fetchSales(params));
-    }, [dispatch]);
+    }, [params]);
+    console.log(stateSale);
+
+    useEffect(() => {
+        dispatch(fetchProducts({ status: '' }));
+    }, [stateSale]);
+
+    useEffect(() => {
+
+        const sobrevendidos = products
+            .filter(p => p.status === 'sobrevendido')
+            .map(p => ({
+                id: p.id,
+                ref: p.reference
+            }));
+
+        setOversold(sobrevendidos);
+        setIsOpneWarning(true)
+    }, [products]);
 
     const table = useReactTable({
         data,
@@ -291,6 +320,7 @@ export default function Sales() {
                                             .then((res) => {
                                                 toast.success(res.message || 'Venta cancelada con éxito');
                                                 dispatch(fetchSales(params));
+                                                setStateSale(false)
                                             })
                                             .catch((errorMessage) => {
                                                 toast.error(errorMessage || 'Hubo un error al cancelar la venta');
@@ -308,10 +338,20 @@ export default function Sales() {
             )}
             {loading && <div className="text-center text-purple-600 font-medium">Cargando...</div>}
             {/* {error && <div className="text-center text-red-500">Error: {error}</div>} */}
+            <ModalAlert
+                isOpen={isOpneWarning}
+                onClose={() => setIsOpneWarning(false)}
+                title="Productos sobrevendidos"
+                message="Las siguientes referencias tienen un estado de SOBREVENDIDO:."
+                oversold={oversold.map(p => p.ref)} 
+            />
+
+
+
 
             <div className="p-4 sm:p-6">
                 <div className="mb-4">
-                    <SelectStatusFilter  
+                    <SelectStatusFilter
                         value={statusFilter}
                         onChange={
                             (value) => {

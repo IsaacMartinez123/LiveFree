@@ -1,11 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
 import { paymentDetailData } from '../../Components/sections/payments/AddPayment';
-import { FetchSalesParams } from '../../pages/sales/Sales';
+import { FetchParams } from '../../pages/sales/Sales';
 
 export const fetchPayments = createAsyncThunk(
     'payments/fetchPayments',
-    async (params: FetchSalesParams = {}, thunkAPI) => {
+    async (params: FetchParams = {}, thunkAPI) => {
         try {
             const response = await api.get('/payments', { params });
             return response.data;
@@ -35,7 +35,9 @@ export const updatePayment = createAsyncThunk(
     ) => {
         const { id, ...paymentDetailData } = payload;
         
-        try {
+        try {     
+            console.log(id, paymentDetailData);
+
             const response = await api.put(`/payments/${id}`, paymentDetailData);
             return response.data;
         } catch (error: any) {

@@ -14,10 +14,28 @@ class ProductController extends Controller
     public function index()
     {
         try {
-            $products = Product::all();
-            if ($products->isEmpty()) {
-                return response()->json(['message' => 'No se encontraron resultados'], 404);
+            $query = Product::select(
+                'id',
+                'reference',
+                'product_name',
+                'price',
+                'color',
+                'size_S',
+                'size_M',
+                'size_L',
+                'size_XL',
+                'size_2XL',
+                'size_3XL',
+                'size_4XL',
+                'status'
+            );
+
+            if (request()->filled('status')) {
+                $query->where('status', request('status'));
             }
+
+            $products = $query->get();
+
             return response()->json($products);
         } catch (QueryException $e) {
             $errorMessage = $e->getMessage();

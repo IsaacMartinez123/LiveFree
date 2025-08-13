@@ -1,11 +1,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
+import { FetchParams } from '../../pages/sales/Sales';
 
 export const fetchProducts = createAsyncThunk(
     'products/fetchProducts',
-    async (_, thunkAPI) => {
+    async (params: FetchParams = {}, thunkAPI) => {
         try {
-            const response = await api.get('/products'); 
+            const response = await api.get('/products', { params }); 
             return response.data;
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error.response?.data?.message || 'Error al obtener productos');

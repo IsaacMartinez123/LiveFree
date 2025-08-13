@@ -12,14 +12,14 @@ import {
 import { useMemo, useState } from 'react';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { ArrowCircleLeft, ArrowCircleRight, EmptyWalletAdd, Eye } from 'iconsax-reactjs';
+import { ArrowCircleLeft, ArrowCircleRight, DollarCircle, Eye } from 'iconsax-reactjs';
 import { fetchPayments } from '../../redux/payments/paymentsThunk';
 import AddPayment from '../../Components/sections/payments/AddPayment';
 import PaymentDetail from './PaymentsDetail';
 import { SortableHeader } from '../../Components/layout/SortableHeader';
 import DownloadPaymentButton from '../../Components/PDF/DownloadPaymentButton';
 import { SelectStatusFilter } from '../../Components/layout/SelectStatusFilter';
-import { FetchSalesParams } from '../sales/Sales';
+import { FetchParams } from '../sales/Sales';
 
 export type PaymentDetail = {
     id: number;
@@ -64,11 +64,11 @@ export default function Payments() {
 
     const [isDetailOpen, setIsDetailOpen] = useState(false);
 
-    const [selectedPayment, setSelectedPayment] = useState<Payment | undefined>(undefined);
+    const [selectedPayment, setSelectedPayment] = useState<Payment>();
 
     const [statusFilter, setStatusFilter] = useState('');
 
-    const [params, setParams] = useState<FetchSalesParams>({ status: '' });
+    const [params, setParams] = useState<FetchParams>({ status: '' });
 
     const columns = useMemo<ColumnDef<Payment>[]>(() => [
         {
@@ -128,8 +128,9 @@ export default function Payments() {
                     <span
                         className={`px-3 py-1 rounded-full text-base sm:text-lg font-semibold
                                 ${status === 'pendiente' ? 'bg-yellow-100 text-yellow-700' :
-                                status === 'pagado' ? 'bg-green-100 text-green-700' :
-                                    status === 'cancelado' ? 'bg-red-100 text-red-700' : ''
+                                    status === 'pagado' ? 'bg-green-100 text-green-700' :
+                                        status === 'cancelado' ? 'bg-red-100 text-red-700' : 
+                                            status === 'sobrepagado' ? 'bg-orange-100 text-orange-700' : ''
                             }
                             `}
                     >
@@ -156,18 +157,16 @@ export default function Payments() {
                         >
                             <Eye size="25" />
                         </button>
-                        {status === 'pendiente' && (
-                            <button
-                                onClick={() => {
-                                    setSelectedPayment(row.original);
-                                    setIsModalOpen(true);
-                                }}
-                                className="text-sm text-blue-600 hover:underline"
-                                title="Editar"
-                            >
-                                <EmptyWalletAdd size="25" color="#7E22CE" />
-                            </button>
-                        )}
+                        <button
+                            onClick={() => {
+                                setSelectedPayment(row.original);
+                                setIsModalOpen(true);
+                            }}
+                            className="text-sm text-blue-600 hover:underline"
+                            title="Agregar Abono"
+                        >
+                            <DollarCircle size="25" color="#7E22CE" />
+                        </button>
                         <DownloadPaymentButton payment={row.original} />
                     </div>
                 );

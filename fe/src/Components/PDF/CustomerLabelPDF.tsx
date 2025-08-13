@@ -72,9 +72,9 @@ const CustomerLabelPDF = ({ client }: Props) => (
                         ['SEÑORES:', client.name],
                         ['CEDULA:', client.document],
                         ['DIRECCION:', client.address],
-                        ['CIUDAD:', client.city],
-                        ['TELEFONO:', client.phone],
                         ['ALMACEN:', client.store_name],
+                        ['TELEFONO:', client.phone],
+                        ['CIUDAD:', client.city],
                     ].map(([label, value], idx) => (
                         <View style={styles.row} key={idx}>
                             <Text style={styles.label}>{label}</Text>
@@ -86,11 +86,11 @@ const CustomerLabelPDF = ({ client }: Props) => (
                 {/* Datos fijos de empresa */}
                 <View style={styles.sectionEmpresa}>
                     <Text style={styles.empresaText}>LIVE FREE</Text>
-                    <Text style={styles.empresaText}>CC: 3575930</Text>
+                    <Text style={styles.empresaText}>CC: 98.624.755</Text>
                     <Text style={styles.empresaText}>
-                        CRA 57 #51-44 (AVENIDA FERROCARRIL) SEGUNDO PISO SAN BENITO
+                        CALLE 18 # 71 - 24 BELEN LAS PLAYAS
                     </Text>
-                    <Text style={styles.empresaText}>TEL: 9206823281 (SAMUEL CARDONA)</Text>
+                    <Text style={styles.empresaText}>TEL: 3206823281 (SAMUEL CARDONA)</Text>
                     <Text style={styles.empresaNombre}>MEDELLIN - ANTIOQUIA</Text>
                 </View>
             </View>

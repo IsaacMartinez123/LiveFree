@@ -51,7 +51,7 @@ class PaymentController extends Controller
                 'date_format' => 'El campo :attribute debe tener el formato Y-m-d.',
                 'string' => 'El campo :attribute debe ser una cadena de texto.',
                 'array' => 'El campo :attribute debe ser un arreglo.',
-                'observations.max' => 'El campo observaciones no puede tener más de 255',
+                'observations.max' => 'El campo observaciones no puede tener más de 255 caracteres.',
                 'payment_method.max' => 'El campo método de pago no puede tener más de 255 caracteres.',
             ];
 
@@ -61,7 +61,6 @@ class PaymentController extends Controller
                 'paymentDetailData.*.payment_method' => 'required|string|max:255',
                 'paymentDetailData.*.date' => 'required|date_format:Y-m-d',
                 'paymentDetailData.*.observations' => 'nullable|string|max:255',
-
             ], $messages);
 
             if ($validator->fails()) {
@@ -70,9 +69,11 @@ class PaymentController extends Controller
 
             $payment = Payment::findOrFail($id);
 
+            $payment->paymentDetails()->delete();
+
             foreach ($request->paymentDetailData as $detail) {
                 $payment->paymentDetails()->create([
-                    'amount' => $detail['amount'],
+                    'amount' => floatval($detail['amount']),
                     'payment_method' => $detail['payment_method'],
                     'date' => $detail['date'],
                     'observations' => $detail['observations'] ?? null,
@@ -83,25 +84,28 @@ class PaymentController extends Controller
 
             $payment->total_payment = $totalPayment;
 
-            $payment->status = $totalPayment >= $payment->total_debt ? 'pagado' : 'pendiente';
+            if ($totalPayment > $payment->total_debt) {
+                    $status = 'sobrepagado';
+                } elseif ($totalPayment == $payment->total_debt) {
+                    $status = 'pagado';
+                } else {
+                    $status = 'pendiente';
+                }
 
+            $payment->status = $status;
+            
             $payment->save();
-
 
             DB::commit();
 
             return response()->json([
                 'message' => 'Abonos actualizados correctamente',
+                'total_payment' => $totalPayment,
+                'status' => $payment->status
             ]);
         } catch (QueryException $e) {
             DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 400);
         }
-    }
-
-
-    public function destroy(string $id)
-    {
-        //
     }
 }

@@ -1,11 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
-import { FetchSalesParams, SaleDetail } from '../../pages/sales/Sales';
+import { FetchParams, SaleDetail } from '../../pages/sales/Sales';
 
 
 export const fetchSales = createAsyncThunk(
     'sales/fetchSales',
-    async (params: FetchSalesParams = {}, thunkAPI) => {
+    async (params: FetchParams = {}, thunkAPI) => {
         try {
             const res = await api.get('/sales', { params });
             return res.data;

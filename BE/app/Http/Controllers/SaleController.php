@@ -357,12 +357,18 @@ class SaleController extends Controller
                 $totalPayment = $existingPayment->paymentDetails()->sum('amount');
                 $existingPayment->total_payment = $totalPayment;
 
-                $existingPayment->status = $totalPayment >= $existingPayment->total_debt ? 'pagado' : 'pendiente';
+                if ($totalPayment > $existingPayment->total_debt) {
+                    $status = 'sobrepagado';
+                } elseif ($totalPayment == $existingPayment->total_debt) {
+                    $status = 'pagado';
+                } else {
+                    $status = 'pendiente';
+                }
 
                 $existingPayment->update([
                     'client_id' => $sale->client_id,
                     'total_debt' => $sale->total,
-                    'status' => $existingPayment->status,
+                    'status' => $status,
                 ]);
             } else {
                 Payment::create([
