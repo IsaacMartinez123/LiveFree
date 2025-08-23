@@ -14,6 +14,7 @@ return new class extends Migration
             $table->foreignId('client_id')->constrained('clients');
             $table->foreignId('seller_id')->constrained('sellers');
             $table->foreignId('user_id')->constrained('users');
+            $table->date('date_dispatch')->nullable();
             $table->decimal('total', 10, 2);
             $table->enum('status', ['pendiente', 'despachada', 'cancelada', 'devuelta'])->default('pendiente');
             $table->timestamps();

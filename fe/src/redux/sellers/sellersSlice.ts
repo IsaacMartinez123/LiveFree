@@ -1,9 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { createSeller, deleteSeller, fetchSellers, updateSeller } from './sellersThunk';
-import { Seller } from '../../pages/users/Sellers';
+import { createSeller, deleteSeller, fetchSellers, Seller, updateSeller } from './sellersThunk';
 
 const initialState = {
-    sellers: [] as Seller[], // Cambia 'any' por el tipo adecuado si lo tienes definido
+    sellers: [] as Seller[],
     loading: false,
     error: null as string | null,
 };

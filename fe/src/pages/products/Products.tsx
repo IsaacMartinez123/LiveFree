@@ -10,32 +10,15 @@ import {
     SortingState
 } from '@tanstack/react-table';
 
-
 import { useMemo, useState } from 'react';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { ArrowCircleLeft, ArrowCircleRight, Edit } from 'iconsax-reactjs';
-import { fetchProducts } from '../../redux/products/productsThunk';
 import AddProduct from '../../Components/sections/products/AddProduct';
 import { SortableHeader } from '../../Components/layout/SortableHeader';
-import { FetchParams } from '../sales/Sales';
 import { SelectStatusFilter } from '../../Components/layout/SelectStatusFilter';
-
-export type Products = {
-    id: number;
-    reference: string;
-    product_name: string;
-    price: number;
-    color: string;
-    size_S: number;
-    size_M: number;
-    size_L: number;
-    size_XL: number;
-    size_2XL: number;
-    size_3XL: number;
-    size_4XL: number;
-    status: string;
-};
+import { fetchProducts, Products } from '../../redux/products/productsThunk';
+import { FetchParams } from '../../redux/sales/salesThunk';
 
 const stateSales = [
     { value: '', label: 'Todos' },
@@ -45,7 +28,7 @@ const stateSales = [
 ];
 
 
-export default function Products() {
+export default function ProductsPage() {
     const [globalFilter, setGlobalFilter] = useState('');
 
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -211,6 +194,9 @@ export default function Products() {
             {error && <div className="text-center text-red-500">Error: {error}</div>}
 
             <div className="p-4 sm:p-6">
+                <h1 className="text-2xl font-bold mb-4" style={{ color: '#7E22CE' }}>
+                    Gestión de Productos
+                </h1>
                 <div className="mb-4">
                     <SelectStatusFilter
                         value={statusFilter}

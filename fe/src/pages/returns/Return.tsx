@@ -12,27 +12,51 @@ import {
 import { useMemo, useState } from 'react';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { ArrowCircleLeft, ArrowCircleRight, DirectInbox, Edit, Eye, Forbidden2, Refresh } from 'iconsax-reactjs';
-import { dispatchSale, FetchParams, fetchSales, Sales, toggleSaleStatus } from '../../redux/sales/salesThunk';
-import SalesDetail from './SalesDetail';
-import { toast } from 'react-toastify';
-import AddSale from '../../Components/sections/sales/AddSale';
-import DownloadInvoiceButton from '../../Components/PDF/DownloadInvoiceButton';
+import { ArrowCircleLeft, ArrowCircleRight, Edit, Eye, MoneySend, Refresh } from 'iconsax-reactjs';
+import { FetchParams, fetchSales } from '../../redux/sales/salesThunk';
 import { SortableHeader } from '../../Components/layout/SortableHeader';
 import { SelectStatusFilter } from '../../Components/layout/SelectStatusFilter';
-import { fetchProducts } from '../../redux/products/productsThunk';
-import ModalAlert from '../../Components/layout/ModalAlert';
-
+import { fetchReturns, Return, toggleReturnStatus } from '../../redux/returns/returnsThunk';
+import AddReturn from '../../Components/sections/returns/AddReturn';
+import ReturnDetail from './ReturnDetail';
+import { toast } from 'react-toastify';
+import DownloadReturnButton from '../../Components/PDF/DownloadReturnButton';
 
 
 const stateSales = [
     { value: '', label: 'Todos' },
     { value: 'pendiente', label: 'Pendiente' },
-    { value: 'despachada', label: 'Despachada' },
-    { value: 'cancelada', label: 'Cancelada' },
+    { value: 'reembolsado', label: 'Reembolsado' },
 ];
 
-export default function SalesPage() {
+// Componente separado para la celda "reason"
+const ReasonCell: React.FC<{ value: string }> = ({ value }) => {
+    const [expanded, setExpanded] = useState(false);
+    const maxLength = 50;
+
+    const displayedText = expanded
+        ? value
+        : value.length > maxLength
+            ? value.slice(0, maxLength) + '...'
+            : value;
+
+    return (
+        <div className="max-w-xs break-words whitespace-pre-wrap text-gray-800">
+            {displayedText}
+            {value.length > maxLength && (
+                <button
+                    onClick={() => setExpanded(!expanded)}
+                    className="ml-1 text-blue-600 hover:underline text-sm"
+                >
+                    {expanded ? 'ver menos' : 'ver más'}
+                </button>
+            )}
+        </div>
+    );
+};
+
+
+export default function Returns() {
     const [globalFilter, setGlobalFilter] = useState('');
 
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -41,27 +65,18 @@ export default function SalesPage() {
 
     const [isDetailOpen, setIsDetailOpen] = useState(false);
 
-    const [selectedSale, setSelectedSale] = useState<Sales | undefined>(undefined);
-
-    const [showConfirm, setShowConfirm] = useState<{ open: boolean, id?: number }>({ open: false, id: 0 });
+    const [selectedReturn, setSelectedReturn] = useState<Return | undefined>(undefined);
 
     const [statusFilter, setStatusFilter] = useState('');
 
     const [params, setParams] = useState<FetchParams>({ status: '' });
 
-    const [stateSale, setStateSale] = useState<boolean>();
-
-    const [isOpneWarning, setIsOpneWarning] = useState<boolean>(false);
-
-    const [oversold, setOversold] = useState<{ id: number; ref: string }[]>([]);
-
-
-    const columns = useMemo<ColumnDef<Sales>[]>(
+    const columns = useMemo<ColumnDef<Return>[]>(
         () => [
             {
-                accessorKey: 'invoice_number',
+                accessorKey: 'return_number',
                 header: ({ column }) => (
-                    <SortableHeader column={column} label="Número de Factura" />
+                    <SortableHeader column={column} label="Número de Devolución" />
                 ),
                 cell: ({ getValue }) => {
                     const value = getValue<string>();
@@ -75,31 +90,43 @@ export default function SalesPage() {
                 ),
             },
             {
-                accessorKey: 'seller.name',
+                accessorKey: 'return_date',
                 header: ({ column }) => (
-                    <SortableHeader column={column} label="Vendedor" />
-                ),
-            },
-            {
-                accessorKey: 'date_dispatch',
-                header: ({ column }) => (
-                    <SortableHeader column={column} label="Fecha de Despachada" />
+                    <SortableHeader column={column} label="Fecha de Devolución" />
                 ),
                 cell: ({ getValue }) => {
-                    const value = getValue<string>();                    
-                    return value ? new Date(value).toLocaleDateString('es-ES') : '-';
+                    const value = getValue<string>();
+                    return value ? new Date(value).toLocaleDateString() : '-';
                 }
             },
             {
-                accessorKey: 'total',
+                accessorKey: 'refund_date',
                 header: ({ column }) => (
-                    <SortableHeader column={column} label="Total" />
+                    <SortableHeader column={column} label="Fecha de Reembolso" />
+                ),
+                cell: ({ getValue }) => {
+                    const value = getValue<string>();
+                    return value ? new Date(value).toLocaleDateString() : '-';
+                }
+            },
+            {
+                accessorKey: 'refund_total',
+                header: ({ column }) => (
+                    <SortableHeader column={column} label="Total Reembolsado" />
                 ),
                 cell: ({ getValue }) => {
                     const value = getValue<number>();
                     return `$ ${Math.floor(value).toLocaleString()}`;
                 }
             },
+            {
+                accessorKey: 'reason',
+                header: ({ column }) => (
+                    <SortableHeader column={column} label="Motivo" />
+                ),
+                cell: ({ getValue }) => <ReasonCell value={getValue<string>() || '-'} />
+            }
+            ,
             {
                 accessorKey: 'status',
                 header: 'Estado',
@@ -112,9 +139,8 @@ export default function SalesPage() {
                         <span
                             className={`px-3 py-1 rounded-full text-base sm:text-lg font-semibold
                                 ${status === 'pendiente' ? 'bg-yellow-100 text-yellow-700' :
-                                    status === 'despachada' ? 'bg-green-100 text-green-700' :
-                                        status === 'cancelada' ? 'bg-red-100 text-red-700' :
-                                            status === 'devuelta' ? 'bg-blue-100 text-blue-700' : ''
+                                    status === 'reembolsado' ? 'bg-green-100 text-green-700' : ''
+
                                 }
                             `}
                         >
@@ -143,7 +169,7 @@ export default function SalesPage() {
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => {
-                                setSelectedSale(row.original);
+                                setSelectedReturn(row.original);
                                 setIsDetailOpen(true);
                             }}
                             className="text-blue-600 hover:text-blue-800"
@@ -151,62 +177,10 @@ export default function SalesPage() {
                         >
                             <Eye size="25" />
                         </button>
-                        {row.original.status !== 'cancelada' ? (
-                            <button
-                                onClick={() => setShowConfirm({ open: true, id: row.original.id })}
-                                className={`text-sm text-red-600 hover:underline`}
-                                title='Cancelar Venta'
-                            >
-                                <Forbidden2 size="25" color="#dc2626" />
-                            </button>
-
-                        ) : (
-                            <button
-                                onClick={() => {
-                                    dispatch(toggleSaleStatus(row.original.id))
-                                        .unwrap()
-                                        .then((res) => {
-                                            toast.success(res.message || 'Venta cambiada a pendiente con éxito');
-                                            dispatch(fetchSales(params));
-                                        })
-                                        .catch((errorMessage) => {
-                                            toast.error(errorMessage || 'Hubo un error al cancelar la venta');
-                                            dispatch(fetchSales(params));
-                                        });
-                                }}
-                                className={`text-sm text-red-600 hover:underline`}
-                                title='Cambiar a Pendiente'
-                            >
-                                <Refresh size="25" color="#c0bd27ff" />
-                            </button>
-                        )}
-                        {row.original.status !== 'despachada' && row.original.status !== 'cancelada' && (
-                            <button
-                                onClick={() => {
-                                    dispatch(dispatchSale(row.original.id))
-                                        .unwrap()
-                                        .then((res) => {
-                                            toast.success(res.message || 'Venta despachada con éxito');
-                                            dispatch(fetchSales(params));
-                                            setStateSale(true)
-                                        })
-                                        .catch((errorMessage) => {
-                                            toast.error(errorMessage || 'Hubo un error al despachar la venta');
-                                            dispatch(fetchSales(params));
-
-                                        });
-                                }}
-                                className="text-blue-600 hover:text-blue-800"
-                                title='Despachar Venta'
-                            >
-                                <DirectInbox size="25" color='#16a34a' />
-                            </button>
-                        )}
-                        <DownloadInvoiceButton sale={row.original} />
                         {row.original.status === 'pendiente' && (
                             <button
                                 onClick={() => {
-                                    setSelectedSale(row.original);
+                                    setSelectedReturn(row.original);
                                     setIsModalOpen(true);
                                 }}
                                 className="text-sm text-blue-600 hover:underline"
@@ -215,6 +189,46 @@ export default function SalesPage() {
                                 <Edit size="25" color="#7E22CE" />
                             </button>
                         )}
+                        {row.original.status === 'pendiente' ? (
+                            <button
+                                onClick={() => {
+                                    dispatch(toggleReturnStatus(row.original.id))
+                                        .unwrap()
+                                        .then((res) => {
+                                            toast.success(res.message || 'Devolución reembolsada correctamente');
+                                            dispatch(fetchReturns(params));
+                                        })
+                                        .catch((errorMessage) => {
+                                            toast.error(errorMessage || 'Hubo un error al reembolsar la devolución');
+                                            dispatch(fetchReturns(params));
+                                        });
+                                }}
+                                className={`text-sm text-red-600 hover:underline`}
+                                title='Cambiar a Pendiente'
+                            >
+                                <MoneySend size="25" color="#16a34a" />
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => {
+                                    dispatch(toggleReturnStatus(row.original.id))
+                                        .unwrap()
+                                        .then((res) => {
+                                            toast.success(res.message || 'Devolución cambiada a pendiente correctamente');
+                                            dispatch(fetchReturns(params));
+                                        })
+                                        .catch((errorMessage) => {
+                                            toast.error(errorMessage || 'Hubo un error al cambiar el estado de la devolución');
+                                            dispatch(fetchReturns(params));
+                                        });
+                                }}
+                                className={`text-sm text-red-600 hover:underline`}
+                                title='Cambiar a Pendiente'
+                            >
+                                <Refresh size="25" color="#c0bd27ff" />
+                            </button>
+                        )}
+                        <DownloadReturnButton devolucion={row.original} />
                     </div>
                 )
             }
@@ -223,37 +237,14 @@ export default function SalesPage() {
     );
 
     const dispatch = useAppDispatch();
-    const { sales, loading, error } = useAppSelector(state => state.sales);
 
-    const { products } = useAppSelector(state => state.products)
+    const { returns, loading, error } = useAppSelector(state => state.returns);
 
-    const data = useMemo(() => [...sales].reverse(), [sales]);
+    const data = useMemo(() => [...returns].reverse(), [returns]);
 
     useEffect(() => {
-        dispatch(fetchSales(params));
+        dispatch(fetchReturns(params));
     }, [params]);
-
-    useEffect(() => {
-        dispatch(fetchProducts({ status: '' }));
-    }, [stateSale]);
-
-
-    useEffect(() => {
-        const sobrevendidos = products
-            .filter(p => p.status === "sobrevendido")
-            .map(p => ({
-                id: p.id,
-                ref: p.reference,
-            }));
-
-        setOversold(sobrevendidos);
-
-        if (sobrevendidos.length > 0) {
-            setIsOpneWarning(true);
-        } else {
-            setIsOpneWarning(false);
-        }
-    }, [products]);
 
     const table = useReactTable({
         data,
@@ -271,65 +262,12 @@ export default function SalesPage() {
 
     return (
         <>
-            {showConfirm.open && (
-                <div
-                    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50"
-                    onClick={() => setShowConfirm({ open: false })}
-                >
-                    <div
-                        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-xs"
-                        onClick={e => e.stopPropagation()}
-                    >
-                        <h2 className="text-lg font-semibold mb-4 text-gray-800">¿Cancelar venta?</h2>
-                        <p className="mb-6 text-red-700">¿Estas Seguro Que Deseas Cancelar La Venta?</p>
-                        <div className="flex justify-around items-center">
-                            <button
-                                className="px-4 py-2 rounded bg-error text-white hover:bg-red-600"
-                                onClick={() => setShowConfirm({ open: false })}
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                className="px-4 py-2 rounded bg-primary text-white hover:bg-primary-dark"
-                                onClick={() => {
-                                    if (typeof showConfirm.id !== 'undefined') {
-                                        dispatch(toggleSaleStatus(showConfirm.id))
-                                            .unwrap()
-                                            .then((res) => {
-                                                toast.success(res.message || 'Venta cancelada con éxito');
-                                                dispatch(fetchSales(params));
-                                                setStateSale(false)
-                                            })
-                                            .catch((errorMessage) => {
-                                                toast.error(errorMessage || 'Hubo un error al cancelar la venta');
-                                                dispatch(fetchSales(params));
-                                            });
-                                    }
-                                    setShowConfirm({ open: false });
-                                }}
-                            >
-                                Confirmar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
             {loading && <div className="text-center text-purple-600 font-medium">Cargando...</div>}
             {/* {error && <div className="text-center text-red-500">Error: {error}</div>} */}
-            <ModalAlert
-                isOpen={isOpneWarning}
-                onClose={() => setIsOpneWarning(false)}
-                title="Productos sobrevendidos"
-                message="Las siguientes referencias tienen un estado de SOBREVENDIDO:."
-                oversold={oversold.map(p => p.ref)}
-            />
-
-
-
 
             <div className="p-4 sm:p-6">
                 <h1 className="text-2xl font-bold mb-4" style={{ color: '#7E22CE' }}>
-                    Gestión de Ventas
+                    Gestión de Devoluciones
                 </h1>
                 <div className="mb-4">
                     <SelectStatusFilter
@@ -357,7 +295,7 @@ export default function SalesPage() {
                         onClick={() => setIsModalOpen(true)}
                         className="bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary transition text-base sm:text-lg w-full sm:w-auto"
                     >
-                        Registrar Venta
+                        Registrar Devolución
                     </button>
                 </div>
                 {!loading && !error && (
@@ -417,19 +355,20 @@ export default function SalesPage() {
                     </>
                 )}
             </div>
-            <AddSale
+            <AddReturn
                 isOpen={isModalOpen}
                 onClose={() => {
                     setIsModalOpen(false);
-                    setSelectedSale(undefined);
+                    setSelectedReturn(undefined);
                 }}
                 onSubmitSuccess={() => {
-                    dispatch(fetchSales(params));
-                    setSelectedSale(undefined);
+                    dispatch(fetchReturns(params));
+                    setSelectedReturn(undefined);
                 }}
-                sale={selectedSale}
+                devolucion={selectedReturn}
             />
-            <SalesDetail isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)} sale={selectedSale} />
+            <ReturnDetail isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)} devolucion={selectedReturn} />
         </>
+
     );
 }

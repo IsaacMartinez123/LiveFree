@@ -1,7 +1,44 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
-import { FetchParams, SaleDetail } from '../../pages/sales/Sales';
 
+export type SaleDetail = {
+    id: number;
+    sale_id: number;
+    product_id: number;
+    reference: string;
+    product_name: string;
+    price: string;
+    color: string;
+    size_S: number;
+    size_M: number;
+    size_L: number;
+    size_XL: number;
+    size_2XL: number;
+    size_3XL: number;
+    size_4XL: number;
+    sub_total: number;
+};
+
+export type Sales = {
+    id: number;
+    invoice_number: string;
+    client_id: number;
+    seller_id: number;
+    user_id: number;
+    date_dispatch: string | null;
+    total: string;
+    client: { id: number; name: string };
+    seller: { id: number; name: string, seller_code: string };
+    user: { id: number; name: string };
+    sales_details: SaleDetail[];
+    date: string;
+    status: string;
+    created_at: string;
+};
+
+export type FetchParams = {
+    status?: string;
+};
 
 export const fetchSales = createAsyncThunk(
     'sales/fetchSales',
@@ -41,11 +78,7 @@ export const updateSale = createAsyncThunk(
         },
         thunkAPI
     ) => {
-        const { id, saleDetailData } = payload;
-
-        console.log('saleDetailData', saleDetailData);
-        
-
+        const { id, saleDetailData } = payload;        
         try {
             const response = await api.put(`/sales/${id}`, saleDetailData); // 👈 directamente el contenido
             return response.data;

@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchSales, createSale, toggleSaleStatus, dispatchSale } from './salesThunk';
-import { Sales } from '../../pages/sales/Sales';
+import { fetchSales, createSale, toggleSaleStatus, dispatchSale, Sales } from './salesThunk';
 
 const initialState = {
     sales: [] as Sales[],

@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchUsers, createUser, updateUser, toggleUserStatus } from './usersThunk';
-import { User } from '../../pages/users/Users';
+import { fetchUsers, createUser, updateUser, toggleUserStatus, User } from './usersThunk';
 
 const initialState = {
     users:  [] as User[], // Cambia 'any' por el tipo de usuario que estés utilizando

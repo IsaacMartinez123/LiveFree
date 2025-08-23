@@ -12,14 +12,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('return_id')->constrained('returns')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products');
-            
-            $table->integer('size_S')->default(0);
-            $table->integer('size_M')->default(0);
-            $table->integer('size_L')->default(0);
-            $table->integer('size_XL')->default(0);
-            $table->integer('size_2XL')->default(0);
-            $table->integer('size_3XL')->default(0);
-            $table->integer('size_4XL')->default(0);
+            $table->string('reference');
+            $table->string('product_name');
+            $table->decimal('price', 10, 2);
+            $table->string('color');
+            $table->integer('amount')->default(0);
+            $table->integer('sub_total');
             
         });
     }

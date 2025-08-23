@@ -10,17 +10,8 @@ import { useMemo, useState } from 'react';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { ArrowCircleLeft, ArrowCircleRight, Edit, Trash } from 'iconsax-reactjs';
-import { deleteSeller, fetchSellers } from '../../redux/sellers/sellersThunk';
+import { deleteSeller, fetchSellers, Seller } from '../../redux/sellers/sellersThunk';
 import AddSeller from '../../Components/sections/sellers/AddSeller';
-
-export type Seller = {
-    id: number;
-    name: string;
-    document: string;
-    phone: string;
-    seller_code: string;
-};
-
 
 export default function Sellers() {
     const [globalFilter, setGlobalFilter] = useState('');
@@ -130,6 +121,9 @@ export default function Sellers() {
             {error && <div className="text-center text-red-500">Error: {error}</div>}
 
             <div className="p-4 sm:p-6">
+                <h1 className="text-2xl font-bold mb-4" style={{ color: '#7E22CE' }}>
+                    Información de Vendedores
+                </h1>
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
                     <input
                         type="text"

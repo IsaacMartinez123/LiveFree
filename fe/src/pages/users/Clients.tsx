@@ -10,20 +10,9 @@ import { useMemo, useState } from 'react';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { ArrowCircleLeft, ArrowCircleRight, Edit, Trash } from 'iconsax-reactjs';
-import { deleteClient, fetchClients } from '../../redux/clients/clientsThunk';
+import { Client, deleteClient, fetchClients } from '../../redux/clients/clientsThunk';
 import AddClient from '../../Components/sections/clients/AddClient';
 import DownloadCustomerLabelButton from '../../Components/PDF/DownloadCustomerLabelButton';
-
-export type Client = {
-    id: number;
-    name: string;
-    document: string;
-    phone: string;
-    store_name: string;
-    address: string;
-    city: string;
-};
-
 
 export default function Clients() {
     const [globalFilter, setGlobalFilter] = useState('');
@@ -135,6 +124,9 @@ export default function Clients() {
             {error && <div className="text-center text-red-500">Error: {error}</div>}
 
             <div className="p-4 sm:p-6">
+                <h1 className="text-2xl font-bold mb-4" style={{ color: '#7E22CE' }}>
+                    Información de Clientes
+                </h1>
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
                     <input
                         type="text"

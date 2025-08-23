@@ -1,6 +1,7 @@
 import {
     ArrowDown2,
     ArrowRight2,
+    Back,
     Box1,
     Chart,
     ShoppingCart,
@@ -65,7 +66,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
             <nav className="mt-4 sm:mt-6">
                 <ul className="space-y-4 sm:space-y-5 text-sm sm:text-base">
                     <li>
-                        <button className="pl-6 py-2 text-form-label font-semibold hover:text-primary-dark flex items-center gap-x-4">
+                        <button 
+                            className="pl-6 py-2 text-form-label font-semibold hover:text-primary-dark flex items-center gap-x-4"
+                            onClick={() => {
+                                navigate("/reports");
+                            }}
+                        >
                             <Chart size="25" color="#7E22CE" />
                             {sidebarOpen && "Reportes"}
                         </button>
@@ -173,11 +179,22 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
                                             navigate("/payments");
                                         }}
                                     >
-                                        Abonos
+                                        Gestión de Abonos
                                     </button>
                                 </li>
                             </ul>
                         )}
+                    </li>
+                    <li>
+                        <button
+                            className="pl-6 py-2 text-form-label font-semibold hover:text-primary-dark flex items-center gap-x-4"
+                            onClick={() => {
+                                navigate("/returns");
+                            }}
+                        >
+                            <Back size="25" color="#7E22CE" />
+                            {sidebarOpen && "Devoluciones"}
+                        </button>
                     </li>
                 </ul>
             </nav>

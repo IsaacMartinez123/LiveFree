@@ -12,7 +12,7 @@ class PaymentDetail extends Model
     public $timestamps = false;
     
     protected $fillable = [
-        'payment_id', 'amount', 'payment_method', 'date', 'observations'
+        'payment_id', 'amount', 'payment_method', 'date', 'observations', 'discount'
     ];
 
     public function payment()

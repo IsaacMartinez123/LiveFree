@@ -5,15 +5,17 @@ import ProtectedRoute from './Components/ProtectedRoute';
 import Home from './pages/home/Home';
 import Layout from './Components/layout/Layout';
 import Users from './pages/users/Users';
-import Products from './pages/products/Products';
 import Sellers from './pages/users/Sellers';
 import Clients from './pages/users/Clients';
-import Sales from './pages/sales/Sales';
 import Payments from './pages/payments/Payments';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from './redux/hooks';
 import { loginSuccess } from './redux/auth/authSlice';
 import { ToastContainer } from 'react-toastify';
+import ProductsPage from './pages/products/Products';
+import SalesPage from './pages/sales/Sales';
+import Returns from './pages/returns/Return';
+import Reports from './pages/reports/Reports';
 
 function Loader() {
   return (
@@ -69,7 +71,7 @@ function App() {
           element={
             <ProtectedRoute>
               <Layout>
-                <Products />
+                <ProductsPage />
               </Layout>
             </ProtectedRoute>
           }
@@ -99,7 +101,7 @@ function App() {
           element={
             <ProtectedRoute>
               <Layout>
-                <Sales />
+                <SalesPage />
               </Layout>
             </ProtectedRoute>
           }
@@ -110,6 +112,26 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <Payments />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/returns"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Returns />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Reports />
               </Layout>
             </ProtectedRoute>
           }

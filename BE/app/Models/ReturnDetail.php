@@ -11,17 +11,17 @@ class ReturnDetail extends Model
 
     protected $table = 'return_details';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'return_id',
         'product_id',
-        'size_S',
-        'size_M',
-        'size_L',
-        'size_XL',
-        'size_2XL',
-        'size_3XL',
-        'size_4XL',
-        'reason',
+        'reference',
+        'product_name',
+        'price',
+        'color',
+        'amount',
+        'sub_total',
     ];
 
     public function return()

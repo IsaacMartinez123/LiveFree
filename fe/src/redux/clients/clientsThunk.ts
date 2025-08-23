@@ -1,6 +1,16 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
 
+export type Client = {
+    id: number;
+    name: string;
+    document: string;
+    phone: string;
+    store_name: string;
+    address: string;
+    city: string;
+};
+
 export const fetchClients = createAsyncThunk(
     'clients/fetchClients',
     async (_, thunkAPI) => {

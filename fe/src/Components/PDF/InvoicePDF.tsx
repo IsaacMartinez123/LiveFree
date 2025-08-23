@@ -5,8 +5,8 @@ import {
     View,
     StyleSheet
 } from '@react-pdf/renderer';
-import { Sales } from '../../pages/sales/Sales';
 import { Image } from '@react-pdf/renderer';
+import { Sales } from '../../redux/sales/salesThunk';
 
 const styles = StyleSheet.create({
     page: { padding: 40, fontSize: 10, fontFamily: 'Helvetica' },
@@ -69,13 +69,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: 'bold',
     },
-    headerRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-
 
 });
 
@@ -135,9 +128,9 @@ export const InvoicePDF = ({ sale }: { sale: Sales }) => {
         }).format(Number(amount));
     };
 
-    const createdAt = new Date(sale.created_at);
-    const dueDate = new Date(createdAt);
-    dueDate.setDate(createdAt.getDate() + 30);
+    const date_dispatch = new Date(sale.date_dispatch || 'No hay fecha de despachada');
+    const dueDate = new Date(date_dispatch);
+    dueDate.setDate(date_dispatch.getDate() + 30);
 
     return (
         <Document>
@@ -156,7 +149,7 @@ export const InvoicePDF = ({ sale }: { sale: Sales }) => {
                         </Text>
 
                         <Text style={styles.textLine}>
-                            <Text style={{ fontWeight: 'bold' }}>Fecha De Factura: </Text>{formatDate(sale?.created_at)}
+                            <Text style={{ fontWeight: 'bold' }}>Fecha De Factura: </Text>{formatDate(sale?.date_dispatch || 'No hay fecha de despachada')}
                         </Text>
 
                         <Text style={styles.textLine}>

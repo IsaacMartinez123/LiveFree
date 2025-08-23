@@ -13,50 +13,16 @@ class SalesTableSeeder extends Seeder
      */
     public function run(): void
     {
-        // Venta 1
-        $sale1 = Sale::create([
+        Sale::create([
             'invoice_number' => '4050',
             'client_id' => 1,
             'seller_id' => 1,
             'user_id' => 1,
             'total' => 60000,
-            'status' => 'despachada',
-        ]);
-        SalesDetail::create([
-            'sale_id' => $sale1->id,
-            'product_id' => 1,
-            'reference' => 'REF001',
-            'product_name' => 'Blusa Lunares',
-            'price' => 20000,
-            'color' => '#FF0000',
-            'size_S' => 1,
-            'size_M' => 2,
-            'size_L' => 0,
-            'size_XL' => 0,
-            'size_2XL' => 0,
-            'size_3XL' => 0,
-            'size_4XL' => 0,
-            'sub_total' => 60000,
-        ]);
-        SalesDetail::create([
-            'sale_id' => $sale1->id,
-            'product_id' => 2,
-            'reference' => 'REF002',
-            'product_name' => 'Blusa Cuello V',
-            'price' => 40000,
-            'color' => '#0000FF',
-            'size_S' => 0,
-            'size_M' => 1,
-            'size_L' => 1,
-            'size_XL' => 0,
-            'size_2XL' => 0,
-            'size_3XL' => 0,
-            'size_4XL' => 0,
-            'sub_total' => 80000,
+            'status' => 'pendiente',
         ]);
 
-        // Venta 2
-        $sale2 = Sale::create([
+        Sale::create([
             'invoice_number' => '4051',
             'client_id' => 2,
             'seller_id' => 2,
@@ -64,21 +30,150 @@ class SalesTableSeeder extends Seeder
             'total' => 40000,
             'status' => 'pendiente',
         ]);
-        SalesDetail::create([
-            'sale_id' => $sale2->id,
-            'product_id' => 2,
-            'reference' => 'REF002',
-            'product_name' => 'Blusa Cuello V',
-            'price' => 40000,
-            'color' => '#0000FF',
-            'size_S' => 0,
-            'size_M' => 2,
-            'size_L' => 2,
-            'size_XL' => 0,
-            'size_2XL' => 0,
-            'size_3XL' => 0,
-            'size_4XL' => 0,
-            'sub_total' => 16000,
+        
+        Sale::create([
+            'invoice_number' => '4052',
+            'client_id' => 3,
+            'seller_id' => 1,
+            'user_id' => 1,
+            'total' => 80000,
+            'status' => 'pendiente',
         ]);
+
+        Sale::create([
+            'invoice_number' => '4053',
+            'client_id' => 4,
+            'seller_id' => 2,
+            'user_id' => 1,
+            'total' => 50000,
+            'status' => 'pendiente',
+        ]);
+
+        Sale::create([
+            'invoice_number' => '4054',
+            'client_id' => 5,
+            'seller_id' => 1,
+            'user_id' => 1,
+            'total' => 70000,
+            'status' => 'pendiente',
+        ]);
+
+        Sale::create([
+            'invoice_number' => '4055',
+            'client_id' => 6,
+            'seller_id' => 2,
+            'user_id' => 1,
+            'total' => 30000,
+            'status' => 'pendiente',
+        ]);
+
+        Sale::create([
+            'invoice_number' => '4056',
+            'client_id' => 6,
+            'seller_id' => 1,
+            'user_id' => 1,
+            'total' => 90000,
+            'status' => 'pendiente',
+        ]);
+
+        Sale::create([
+            'invoice_number' => '4057',
+            'client_id' => 3,
+            'seller_id' => 3,
+            'user_id' => 1,
+            'total' => 55000,
+            'status' => 'pendiente',
+        ]);
+
+        Sale::create([
+            'invoice_number' => '4058',
+            'client_id' => 4,
+            'seller_id' => 3,
+            'user_id' => 1,
+            'total' => 65000,
+            'status' => 'pendiente',
+        ]);
+
+        Sale::create([
+            'invoice_number' => '4059',
+            'client_id' => 2,
+            'seller_id' => 5,
+            'user_id' => 1,
+            'total' => 75000,
+            'status' => 'pendiente',
+        ]);
+        
+        Sale::create([
+            'invoice_number' => '4060',
+            'client_id' => 5,
+            'seller_id' => 5,
+            'user_id' => 1,
+            'total' => 85000,
+            'status' => 'pendiente',
+        ]);
+
+        Sale::create([
+            'invoice_number' => '4061',
+            'client_id' => 4,
+            'seller_id' => 4,
+            'user_id' => 1,
+            'total' => 95000,
+            'status' => 'pendiente',
+        ]);
+
+        Sale::create([
+            'invoice_number' => '4062',
+            'client_id' => 4,
+            'seller_id' => 4,
+            'user_id' => 1,
+            'total' => 105000,
+            'status' => 'pendiente',
+        ]);
+
+        Sale::create([
+            'invoice_number' => '4063',
+            'client_id' => 6,
+            'seller_id' => 5,
+            'user_id' => 1,
+            'total' => 115000,
+            'status' => 'pendiente',
+        ]);
+
+        Sale::create([
+            'invoice_number' => '4064',
+            'client_id' => 3,
+            'seller_id' => 3,
+            'user_id' => 1,
+            'total' => 125000,
+            'status' => 'pendiente',
+        ]);
+
+        Sale::create([
+            'invoice_number' => '4065',
+            'client_id' => 6,
+            'seller_id' => 3,
+            'user_id' => 1,
+            'total' => 135000,
+            'status' => 'pendiente',
+        ]);
+
+        Sale::create([
+            'invoice_number' => '4066',
+            'client_id' => 5,
+            'seller_id' => 5,
+            'user_id' => 1,
+            'total' => 145000,
+            'status' => 'pendiente',
+        ]);
+
+        Sale::create([
+            'invoice_number' => '4067',
+            'client_id' => 3,
+            'seller_id' => 6,
+            'user_id' => 1,
+            'total' => 155000,
+            'status' => 'pendiente',
+        ]);
+
     }
 }

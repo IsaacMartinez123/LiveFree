@@ -1,7 +1,7 @@
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { InvoicePDF } from './InvoicePDF';
 import { DocumentDownload } from 'iconsax-reactjs';
-import { Sales } from '../../pages/sales/Sales';
+import { Sales } from '../../redux/sales/salesThunk';
 
 const DownloadInvoiceButton = ({ sale }: { sale: Sales }) => {
     return (

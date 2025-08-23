@@ -3,9 +3,9 @@ import {
     fetchPayments,
     createPayment,
     updatePayment,
-    changePaymentStatus
+    changePaymentStatus,
+    Payment
 } from './paymentsThunk';
-import { Payment } from '../../pages/payments/Payments';
 
 
 const initialState = {

@@ -1,6 +1,22 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
-import { FetchParams } from '../../pages/sales/Sales';
+import { FetchParams } from '../sales/salesThunk';
+
+export type Products = {
+    id: number;
+    reference: string;
+    product_name: string;
+    price: number;
+    color: string;
+    size_S: number;
+    size_M: number;
+    size_L: number;
+    size_XL: number;
+    size_2XL: number;
+    size_3XL: number;
+    size_4XL: number;
+    status: string;
+};
 
 export const fetchProducts = createAsyncThunk(
     'products/fetchProducts',

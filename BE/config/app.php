@@ -31,6 +31,13 @@ return [
 
     'env' => env('APP_ENV', 'production'),
 
+    'providers' => [
+        Maatwebsite\Excel\ExcelServiceProvider::class,
+    ],
+    'aliases' => [
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode
@@ -72,7 +79,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'America/Bogota',
 
     /*
     |--------------------------------------------------------------------------

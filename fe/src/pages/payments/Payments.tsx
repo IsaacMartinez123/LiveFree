@@ -13,44 +13,19 @@ import { useMemo, useState } from 'react';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { ArrowCircleLeft, ArrowCircleRight, DollarCircle, Eye } from 'iconsax-reactjs';
-import { fetchPayments } from '../../redux/payments/paymentsThunk';
+import { fetchPayments, Payment } from '../../redux/payments/paymentsThunk';
 import AddPayment from '../../Components/sections/payments/AddPayment';
 import PaymentDetail from './PaymentsDetail';
 import { SortableHeader } from '../../Components/layout/SortableHeader';
 import DownloadPaymentButton from '../../Components/PDF/DownloadPaymentButton';
 import { SelectStatusFilter } from '../../Components/layout/SelectStatusFilter';
-import { FetchParams } from '../sales/Sales';
-
-export type PaymentDetail = {
-    id: number;
-    payment_id: number;
-    amount: string;
-    payment_method: string;
-    date: string;
-    observations: string | null;
-};
-
-export type Client = {
-    id: number;
-    name: string;
-};
-
-export type Payment = {
-    id: number;
-    sales_id: number;
-    client_id: number;
-    invoice_number: string;
-    total_debt: string;
-    total_payment: string;
-    status: string;
-    client: Client;
-    payment_details: PaymentDetail[];
-};
+import { FetchParams } from '../../redux/sales/salesThunk';
 
 const stateSales = [
     { value: '', label: 'Todos' },
     { value: 'pendiente', label: 'Pendiente' },
     { value: 'pagado', label: 'Pagado' },
+    { value: 'sobrepagado', label: 'Sobrepagado' },
     { value: 'cancelado', label: 'Cancelado' },
 ];
 
@@ -205,6 +180,9 @@ export default function Payments() {
             {error && <div className="text-center text-red-500">Error: {error}</div>}
 
             <div className="p-4 sm:p-6">
+                <h1 className="text-2xl font-bold mb-4" style={{ color: '#7E22CE' }}>
+                    Gestión de Abonos
+                </h1>
                 <div className="mb-4">
                     <SelectStatusFilter
                         value={statusFilter}

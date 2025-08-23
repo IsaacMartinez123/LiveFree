@@ -9,18 +9,11 @@ import {
 import { useMemo, useState } from 'react';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { fetchUsers, toggleUserStatus } from '../../redux/users/usersThunk';
+import { fetchUsers, toggleUserStatus, User } from '../../redux/users/usersThunk';
 import { ArrowCircleLeft, ArrowCircleRight, Edit, Refresh } from 'iconsax-reactjs';
 import AddUser from '../../Components/sections/user/AddUser';
 import { toast } from 'react-toastify';
 
-export type User = {
-    id: number;
-    name: string;
-    email: string;
-    rol_id: string;
-    status: boolean;
-};
 
 export default function Users() {
 
@@ -124,6 +117,9 @@ export default function Users() {
             {error && <div className="text-center text-red-500">Error: {error}</div>}
 
             <div className="p-4 sm:p-6">
+                <h1 className="text-2xl font-bold mb-4" style={{ color: '#7E22CE' }}>
+                    Gestión de Usuarios
+                </h1>
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
                     <input
                         type="text"

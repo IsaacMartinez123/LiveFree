@@ -41,26 +41,26 @@ class PaymentController extends Controller
     public function update(Request $request, string $id)
     {
         try {
+            
             DB::beginTransaction();
 
             $messages = [
                 'required' => 'El campo :attribute es requerido.',
                 'numeric' => 'El campo :attribute debe ser un número.',
-                'min' => 'El campo :attribute debe ser mayor o igual a :min.',
                 'max' => 'El campo :attribute no puede ser mayor a :max.',
                 'date_format' => 'El campo :attribute debe tener el formato Y-m-d.',
                 'string' => 'El campo :attribute debe ser una cadena de texto.',
                 'array' => 'El campo :attribute debe ser un arreglo.',
-                'observations.max' => 'El campo observaciones no puede tener más de 255 caracteres.',
+                'observations.max' => 'El campo observaciones no puede tener más de 1000 caracteres.',
                 'payment_method.max' => 'El campo método de pago no puede tener más de 255 caracteres.',
             ];
 
             $validator = Validator::make($request->all(), [
                 'paymentDetailData' => 'required|array',
-                'paymentDetailData.*.amount' => 'required|numeric|min:0',
+                'paymentDetailData.*.amount' => 'required|numeric',
                 'paymentDetailData.*.payment_method' => 'required|string|max:255',
                 'paymentDetailData.*.date' => 'required|date_format:Y-m-d',
-                'paymentDetailData.*.observations' => 'nullable|string|max:255',
+                'paymentDetailData.*.observations' => 'nullable|string|max:1000',
             ], $messages);
 
             if ($validator->fails()) {
@@ -77,6 +77,7 @@ class PaymentController extends Controller
                     'payment_method' => $detail['payment_method'],
                     'date' => $detail['date'],
                     'observations' => $detail['observations'] ?? null,
+                    'discount' => $detail['discount'] ?? false,
                 ]);
             }
 

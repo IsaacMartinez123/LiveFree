@@ -7,9 +7,8 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { fetchClients } from '../../../redux/clients/clientsThunk';
 import { fetchProducts } from '../../../redux/products/productsThunk';
 import { CloseCircle } from 'iconsax-reactjs';
-import { SaleDetail, Sales } from '../../../pages/sales/Sales';
 import { fetchSellers } from '../../../redux/sellers/sellersThunk';
-import { createSale, updateSale } from '../../../redux/sales/salesThunk';
+import { createSale, SaleDetail, Sales, updateSale } from '../../../redux/sales/salesThunk';
 import Select from 'react-select';
 
 
@@ -45,6 +44,7 @@ export const mapSaleToFormValues = (sale: Sales): SalesFormValues => {
             size_2XL: detail.size_2XL,
             size_3XL: detail.size_3XL,
             size_4XL: detail.size_4XL,
+            sub_total: detail.sub_total,
         })),
     };
 };
@@ -360,11 +360,9 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess, sale }: Prop
                                                                                 <td className="px-4 py-2 border text-center">
                                                                                     <button
                                                                                         type="button"
-                                                                                        onClick={() => remove(index)}
-                                                                                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700"
-                                                                                        title="Eliminar producto"
+                                                                                        onClick={() => remove(index)}                                                                                        title="Eliminar producto"
                                                                                     >
-                                                                                        <CloseCircle size="20" />
+                                                                                        <CloseCircle size={25} className="text-error hover:text-red-700" />
                                                                                     </button>
                                                                                 </td>
                                                                             </tr>

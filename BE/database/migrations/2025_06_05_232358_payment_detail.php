@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('payment_method');
             $table->date('date');
             $table->string('observations')->nullable();
+            $table->boolean('discount')->default(false);
         });
     }
 

@@ -1,6 +1,15 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
 
+export type User = {
+    id: number;
+    name: string;
+    email: string;
+    rol_id: string;
+    status: boolean;
+};
+
+
 export const fetchUsers = createAsyncThunk(
     'users/fetchUsers',
     async (_, thunkAPI) => {

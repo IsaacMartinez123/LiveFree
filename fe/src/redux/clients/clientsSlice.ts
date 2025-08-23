@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { createClient, fetchClients, updateClient } from './clientsThunk';
-import { Client } from '../../pages/users/Clients';
+import { Client, createClient, fetchClients, updateClient } from './clientsThunk';
 
 const initialState = {
     clients: [] as Client[],

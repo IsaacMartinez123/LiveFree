@@ -21,7 +21,7 @@ class SaleController extends Controller
                 'seller:id,name,seller_code',
                 'user:id,name',
                 'salesDetails'
-            ])->select('id', 'invoice_number', 'client_id', 'seller_id', 'user_id', 'total', 'status', 'created_at');
+            ])->select('id', 'invoice_number', 'client_id', 'seller_id', 'user_id', 'total', 'date_dispatch', 'status', 'created_at');
 
             if (request()->filled('status')) {
                 $query->where('status', request('status'));
@@ -293,6 +293,7 @@ class SaleController extends Controller
                     $payment->save();
                 }
                 $sale->status = 'cancelada';
+                $sale->date_dispatch = null;
                 $sale->save();
 
                 DB::commit();
@@ -346,6 +347,7 @@ class SaleController extends Controller
             }
 
             $sale->status = 'despachada';
+            $sale->date_dispatch = now();
             $sale->save();
 
             $existingPayment = Payment::where('sales_id', $sale->id)->first();

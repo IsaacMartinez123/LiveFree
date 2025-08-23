@@ -6,6 +6,8 @@ import sellersSlice from "./sellers/sellersSlice";
 import clientsSlice from "./clients/clientsSlice";
 import salesSlice from "./sales/salesSlice";
 import paymentsSlice from "./payments/paymentsSlice";
+import returnsSlice from "./returns/returnsSlice";
+import reportsSlice from "./reports/reportsSlice";
 
 
 const rootReducer = combineReducers({
@@ -16,6 +18,8 @@ const rootReducer = combineReducers({
     clients: clientsSlice,
     sales: salesSlice,
     payments: paymentsSlice,
+    returns: returnsSlice,
+    reports: reportsSlice, 
     
 });
 

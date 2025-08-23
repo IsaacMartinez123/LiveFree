@@ -6,7 +6,7 @@ import {
     StyleSheet,
     Image,
 } from '@react-pdf/renderer';
-import { Payment } from '../../pages/payments/Payments';
+import { Payment } from '../../redux/payments/paymentsThunk';
 
 interface Props {
     payment: Payment;
@@ -70,6 +70,10 @@ const styles = StyleSheet.create({
     colObs: {
         width: '40%',
     },
+    colDesc: {
+        width: '20%',
+        textAlign: 'left',
+    },
     summaryText: {
         marginBottom: 4,
     },
@@ -99,7 +103,7 @@ export default function PaymentDetailPDF({ payment }: Props) {
 
                 <View style={styles.headerContainer}>
                     <View style={styles.leftColumn}>
-                        <Text style={styles.invoiceTitle}>Factura #{payment?.invoice_number}</Text>
+                        <Text style={styles.invoiceTitle}>Abono Factura #{payment?.invoice_number}</Text>
 
                         <Text style={styles.textLine}>
                             <Text style={styles.bold}>Cliente: </Text> {payment.client.name}
@@ -112,7 +116,9 @@ export default function PaymentDetailPDF({ payment }: Props) {
                         <Text style={styles.textLine}>
                             <Text style={styles.bold}>Deuda Total: {parseFloat(payment.total_debt).toLocaleString()}</Text>
                         </Text>
-
+                        <Text style={styles.textLine}>
+                            <Text style={styles.bold}>Deuda Restante: {(parseFloat(payment.total_debt) - parseFloat(payment.total_payment)).toLocaleString()}</Text>
+                        </Text>
                         <Text style={styles.textLine}>
 
                         </Text>
@@ -130,6 +136,7 @@ export default function PaymentDetailPDF({ payment }: Props) {
                     <Text style={[styles.col, styles.colAmount]}>Monto</Text>
                     <Text style={[styles.col, styles.colDate]}>Fecha</Text>
                     <Text style={[styles.col, styles.colObs]}>Observaciones</Text>
+                    <Text style={[styles.col, styles.colDesc]}>Descuento</Text>
                 </View>
 
                 {(payment.payment_details ?? []).map((detail, idx) => (
@@ -145,6 +152,9 @@ export default function PaymentDetailPDF({ payment }: Props) {
                         </Text>
                         <Text style={[styles.col, styles.colObs]}>
                             {detail.observations || '-'}
+                        </Text>
+                        <Text style={[styles.col, styles.colDesc]}>
+                            {detail.discount ? 'Si' : 'No'}
                         </Text>
                     </View>
                 ))}

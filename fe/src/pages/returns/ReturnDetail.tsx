@@ -1,13 +1,13 @@
 import { useEffect } from "react";
-import { Sales } from "../../redux/sales/salesThunk";
+import { Return } from "../../redux/returns/returnsThunk";
 
 interface Props {
     isOpen: boolean;
     onClose: () => void;
-    sale: Sales | undefined;
+    devolucion: Return | undefined;
 }
 
-export default function SalesDetail({ isOpen, onClose, sale }: Props) {
+export default function ReturnDetail({ isOpen, onClose, devolucion }: Props) {
     
     useEffect(() => {
         const handleEsc = (event: KeyboardEvent) => {
@@ -22,7 +22,7 @@ export default function SalesDetail({ isOpen, onClose, sale }: Props) {
         };
     }, [isOpen, onClose]);
     
-    if (!isOpen || !sale) return null;
+    if (!isOpen || !devolucion) return null;
     
     return (
         <div
@@ -35,39 +35,42 @@ export default function SalesDetail({ isOpen, onClose, sale }: Props) {
             >
                 {/* Título */}
                 <h2 className="text-2xl font-bold text-purple-700 text-center mb-2">
-                    Detalle de la Venta #{sale.invoice_number}
+                    Detalle de la Devolución #{devolucion.return_number}
                 </h2>
 
                 <div className="text-center mb-8">
                     <span
-                        className={`inline-block px-4 py-1 rounded-full text-sm font-medium
-                            ${sale.status === 'despachada'
-                                ? 'bg-green-100 text-green-700'
-                                : sale.status === 'cancelada'
-                                    ? 'bg-red-100 text-red-700'
-                                    : sale.status === 'pendiente'
-                                        ? 'bg-yellow-100 text-yellow-700'
-                                        : 'bg-gray-100 text-gray-700'
+                        className={`inline-block px-4 py-1 rounded-full text-sm font-medium ${devolucion.status === "pendiente"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : devolucion.status === "procesada"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-gray-100 text-gray-700"
                             }`}
                     >
-                        Estado: {sale.status.charAt(0).toUpperCase() + sale.status.slice(1)}
+                        Estado:{" "}
+                        {devolucion.status.charAt(0).toUpperCase() +
+                            devolucion.status.slice(1)}
                     </span>
                 </div>
-
 
                 {/* Información general */}
                 <div className="flex flex-col gap-8 mb-8">
                     <div className="flex flex-wrap justify-center items-center gap-12 mb-2">
                         {[
-                            { label: 'Cliente', value: sale.client.name },
-                            { label: 'Vendedor', value: sale.seller.name },
-                            { label: 'Usuario', value: sale.user.name },
+                            { label: "Cliente", value: devolucion.client.name },
+                            { label: "Usuario", value: devolucion.user.name },
                             {
-                                label: 'Total',
-                                value: `$${parseFloat(sale.total).toLocaleString()}`,
-                                className: 'text-green-700 font-bold',
+                                label: "Total devuelto",
+                                value: `$${parseFloat(
+                                    devolucion.refund_total
+                                ).toLocaleString()}`,
+                                className: "text-green-700 font-bold",
                             },
-                        ].map(({ label, value, className = '' }, index) => (
+                            {
+                                label: "Fecha de devolución",
+                                value: devolucion.return_date,
+                            },
+                        ].map(({ label, value, className = "" }, index) => (
                             <div className="text-center" key={index}>
                                 <span className="font-semibold block mb-1 text-gray-700">
                                     {label}
@@ -80,7 +83,7 @@ export default function SalesDetail({ isOpen, onClose, sale }: Props) {
                     {/* Tabla de productos */}
                     <div>
                         <h3 className="font-bold mb-4 text-purple-600 text-center">
-                            Productos:
+                            Productos devueltos:
                         </h3>
                         <div className="overflow-x-auto">
                             <table className="min-w-full text-sm mb-4 table-fixed">
@@ -90,24 +93,22 @@ export default function SalesDetail({ isOpen, onClose, sale }: Props) {
                                         <th className="px-4 py-2 w-40 text-left">Producto</th>
                                         <th className="px-4 py-2 w-20 text-left">Color</th>
                                         <th className="px-4 py-2 w-24 text-left">Precio</th>
-                                        <th className="px-2 py-2 w-10">S</th>
-                                        <th className="px-2 py-2 w-10">M</th>
-                                        <th className="px-2 py-2 w-10">L</th>
-                                        <th className="px-2 py-2 w-10">XL</th>
-                                        <th className="px-2 py-2 w-12">2XL</th>
-                                        <th className="px-2 py-2 w-12">3XL</th>
-                                        <th className="px-2 py-2 w-12">4XL</th>
-                                        <th className="px-4 py-2 w-24 text-left">Sub Total</th>
+                                        <th className="px-4 py-2 w-20 text-center">Cantidad</th>
+                                        <th className="px-4 py-2 w-24 text-left">Subtotal</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {sale.sales_details.map((detail) => (
+                                    {devolucion.details.map((detail) => (
                                         <tr
                                             key={detail.id}
                                             className="border-t border-gray-200 hover:bg-gray-50 transition-colors text-center align-middle"
                                         >
-                                            <td className="px-4 py-2 text-left">{detail.reference}</td>
-                                            <td className="px-4 py-2 text-left">{detail.product_name}</td>
+                                            <td className="px-4 py-2 text-left">
+                                                {detail.reference}
+                                            </td>
+                                            <td className="px-4 py-2 text-left">
+                                                {detail.product_name}
+                                            </td>
                                             <td className="px-4 py-2 flex justify-center">
                                                 <span
                                                     className="inline-block w-5 h-5 rounded-full border"
@@ -117,21 +118,16 @@ export default function SalesDetail({ isOpen, onClose, sale }: Props) {
                                             <td className="px-4 py-2 text-left">
                                                 ${parseFloat(detail.price).toLocaleString()}
                                             </td>
-                                            <td className="px-2 py-2">{detail.size_S}</td>
-                                            <td className="px-2 py-2">{detail.size_M}</td>
-                                            <td className="px-2 py-2">{detail.size_L}</td>
-                                            <td className="px-2 py-2">{detail.size_XL}</td>
-                                            <td className="px-2 py-2">{detail.size_2XL}</td>
-                                            <td className="px-2 py-2">{detail.size_3XL}</td>
-                                            <td className="px-2 py-2">{detail.size_4XL}</td>
+                                            <td className="px-4 py-2">{detail.amount}</td>
                                             <td className="px-4 py-2 text-left">
-                                                ${detail.sub_total.toLocaleString()}
+                                                ${(
+                                                    parseFloat(detail.price) * detail.amount
+                                                ).toLocaleString()}
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
-
                         </div>
                     </div>
                 </div>

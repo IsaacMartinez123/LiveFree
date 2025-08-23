@@ -1,7 +1,34 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
 import { paymentDetailData } from '../../Components/sections/payments/AddPayment';
-import { FetchParams } from '../../pages/sales/Sales';
+import { FetchParams } from '../sales/salesThunk';
+
+export type PaymentDetail = {
+    id: number;
+    payment_id: number;
+    amount: string;
+    payment_method: string;
+    date: string;
+    observations: string | null;
+    discount: boolean;
+};
+
+export type Client = {
+    id: number;
+    name: string;
+};
+
+export type Payment = {
+    id: number;
+    sales_id: number;
+    client_id: number;
+    invoice_number: string;
+    total_debt: string;
+    total_payment: string;
+    status: string;
+    client: Client;
+    payment_details: PaymentDetail[];
+};
 
 export const fetchPayments = createAsyncThunk(
     'payments/fetchPayments',

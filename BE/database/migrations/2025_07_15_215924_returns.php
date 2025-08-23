@@ -10,15 +10,14 @@ return new class extends Migration
     {
         Schema::create('returns', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sale_id')->constrained('sales')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users');
-            $table->date('date');
-            $table->enum('reason', [
-                'Defecto de fabricación',
-                'Producto incorrecto',
-                'Producto dañado'
-            ]);
-            $table->text('description')->nullable();
+            $table->foreignId('client_id')->constrained('clients');
+            $table->string('return_number')->unique();
+            $table->decimal('refund_total', 10, 2);
+            $table->date('return_date');
+            $table->date('refund_date')->nullable();
+            $table->text('reason');
+            $table->enum('status', ['pendiente', 'reembolsado'])->default('pendiente');
             $table->timestamps();
         });
     }

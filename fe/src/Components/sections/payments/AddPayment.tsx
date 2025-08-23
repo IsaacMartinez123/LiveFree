@@ -2,11 +2,11 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState, useMemo, useEffect } from 'react';
 import { Formik, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { useAppDispatch } from '../../../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { toast } from 'react-toastify';
-import { updatePayment } from '../../../redux/payments/paymentsThunk';
-import { Payment } from '../../../pages/payments/Payments';
+import { Payment, updatePayment } from '../../../redux/payments/paymentsThunk';
 import { CloseCircle } from 'iconsax-reactjs';
+import { fetchReturns } from '../../../redux/returns/returnsThunk';
 
 interface PaymentModalProps {
     isOpen: boolean;
@@ -20,6 +20,7 @@ export type paymentDetailData = {
     payment_method: string;
     date: string;
     observations?: string;
+    discount?: boolean;
 };
 
 export default function AddPayment({
@@ -28,13 +29,35 @@ export default function AddPayment({
     payment,
     onSubmitSuccess
 }: PaymentModalProps) {
+
     const dispatch = useAppDispatch();
+
     const [paymentDetails, setPaymentDetails] = useState<paymentDetailData[]>([]);
+
+    const { returns } = useAppSelector(state => state.returns);
+
+    const [hasReturns, setHasReturns] = useState(false);
+
+    useEffect(() => {
+        dispatch(fetchReturns({}));
+    }, []);
+
+    useEffect(() => {
+        const clientReturns = returns.filter(ret => ret.client_id === payment?.client_id);
+
+        if (clientReturns.length > 0) {
+            const hasPending = clientReturns.some(ret => ret.status === 'pendiente')
+            setHasReturns(hasPending);
+        } else {
+            setHasReturns(false);
+        }
+
+    }, [payment, returns]);
 
     const validationSchema = Yup.object({
         paymentDetails: Yup.array().of(
             Yup.object({
-                amount: Yup.number().required('Requerido').positive('Debe ser mayor a 0'),
+                amount: Yup.number().required('Requerido'),
                 payment_method: Yup.string().required('Requerido'),
                 date: Yup.date().required('Requerido'),
                 observations: Yup.string(),
@@ -45,7 +68,7 @@ export default function AddPayment({
     const handleAddRow = () => {
         setPaymentDetails([
             ...paymentDetails,
-            { amount: '', payment_method: '', date: '', observations: '' },
+            { amount: '', payment_method: '', date: '', observations: '', discount: false },
         ]);
     };
 
@@ -57,20 +80,22 @@ export default function AddPayment({
                     payment_method: detail.payment_method,
                     date: detail.date,
                     observations: detail.observations || '',
+                    discount: detail.discount || false,
                 }))
             );
         }
     }, [isOpen, payment]);
 
-    const handleChange = (
+    const handleChange = <K extends keyof paymentDetailData>(
         index: number,
-        field: keyof paymentDetailData,
-        value: any
+        field: K,
+        value: paymentDetailData[K]
     ) => {
         const updated = [...paymentDetails];
-        updated[index][field] = value;
+        updated[index] = { ...updated[index], [field]: value };
         setPaymentDetails(updated);
     };
+
 
     const handleRemoveRow = (index: number) => {
         setPaymentDetails(paymentDetails.filter((_, i) => i !== index));
@@ -91,6 +116,8 @@ export default function AddPayment({
 
     const handleSubmit = async () => {
         try {
+            console.log('Updating payment details:', paymentDetails);
+
             await dispatch(updatePayment({ id: payment?.id, paymentDetailData: paymentDetails })).unwrap();
             toast.success('Abonos actualizados correctamente');
             onSubmitSuccess();
@@ -129,9 +156,13 @@ export default function AddPayment({
                             <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                                 {/* Header */}
                                 <div className="flex justify-between items-center mb-4">
-                                    <Dialog.Title className="text-lg font-medium text-primary">
-                                        Agregar Abonos
+                                    <Dialog.Title className="text-lg font-medium leading-6 text-primary">
+                                        Agregar Abonos{" "}
+                                        {hasReturns && (
+                                            <span className="text-red-600">(TIENE DEVOLUCIONES)</span>
+                                        )}
                                     </Dialog.Title>
+
                                     <button onClick={onClose}>
                                         <CloseCircle size={24} className="text-muted hover:text-foreground" />
                                     </button>
@@ -140,19 +171,24 @@ export default function AddPayment({
                                 {/* Contadores */}
                                 <div className="grid grid-cols-3 gap-4 mb-4">
                                     <div className="bg-primary-muted p-3 rounded text-foreground">
-                                        <span className="font-bold">Total deuda:</span> ${totalDeuda.toFixed(2)}
+                                        <span className="font-bold">Total deuda:</span>{" "}
+                                        ${totalDeuda.toLocaleString("es-CO", { minimumFractionDigits: 0 })}
                                     </div>
                                     <div className="bg-success/20 p-3 rounded text-success">
-                                        <span className="font-bold">Abonado:</span> ${totalAbonado.toFixed(2)}
+                                        <span className="font-bold">Abonado:</span>{" "}
+                                        ${totalAbonado.toLocaleString("es-CO", { minimumFractionDigits: 0 })}
                                     </div>
                                     <div
-                                        className={`p-3 rounded ${restante < 0 ? "bg-red-100 text-red-600" : "bg-warning/20 text-warning"
+                                        className={`p-3 rounded ${restante < 0
+                                                ? "bg-red-100 text-red-600"
+                                                : "bg-warning/20 text-warning"
                                             }`}
                                     >
-                                        <span className="font-bold">Restante:</span> ${restante.toFixed(2)}
+                                        <span className="font-bold">Restante:</span>{" "}
+                                        ${restante.toLocaleString("es-CO", { minimumFractionDigits: 0 })}
                                     </div>
-
                                 </div>
+
 
                                 <Formik
                                     initialValues={{ paymentDetails }}
@@ -170,6 +206,7 @@ export default function AddPayment({
                                                             <th className="border px-3 py-2">Método</th>
                                                             <th className="border px-3 py-2">Fecha</th>
                                                             <th className="border px-3 py-2">Observaciones</th>
+                                                            <th className="border px-3 py-2">Descuento</th>
                                                             <th className="border px-3 py-2 text-center">Acciones</th>
                                                         </tr>
                                                     </thead>
@@ -231,11 +268,30 @@ export default function AddPayment({
                                                                     />
                                                                 </td>
                                                                 <td className="border px-3 py-2 text-center">
+                                                                    <label className="inline-flex items-center gap-2 cursor-pointer">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={detail.discount}
+                                                                            onChange={(e) => handleChange(index, "discount", e.target.checked)}
+                                                                            className="sr-only peer"
+                                                                        />
+                                                                        <div
+                                                                            role="switch"
+                                                                            aria-checked={detail.discount}
+                                                                            className="relative w-11 h-6 rounded-full bg-gray-300 transition-colors peer-checked:bg-indigo-600 after:content-[''] after:absolute after:top-1 after:left-1 after:w-4 after:h-4 after:bg-white after:rounded-full after:transition-transform after:duration-200 peer-checked:after:translate-x-5"
+                                                                        />
+                                                                        <span className="select-none text-sm font-medium text-gray-700 peer-checked:text-indigo-600">
+                                                                            {detail.discount ? "Sí" : "No"}
+                                                                        </span>
+                                                                    </label>
+                                                                </td>
+
+                                                                <td className="border px-3 py-2 text-center">
                                                                     <button
                                                                         type="button"
                                                                         onClick={() => handleRemoveRow(index)}
                                                                     >
-                                                                        <CloseCircle size={20} className="text-error hover:text-primary-dark" />
+                                                                        <CloseCircle size={25} className="text-error hover:text-red-700" />
                                                                     </button>
                                                                 </td>
                                                             </tr>

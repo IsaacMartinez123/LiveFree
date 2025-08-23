@@ -12,20 +12,24 @@ class Returns extends Model
     protected $table = 'returns';
 
     protected $fillable = [
-        'sale_id',
         'user_id',
-        'date',
+        'client_id',
+        'return_number',
+        'refund_total',
+        'return_date',
+        'refund_date',
         'reason',
+        'status',
     ];
-
-    public function sale()
-    {
-        return $this->belongsTo(Sale::class);
-    }
 
     public function client()
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function details()
