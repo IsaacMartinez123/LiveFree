@@ -85,20 +85,20 @@ export default function Reports() {
         <div className="p-6 space-y-8 bg-background min-h-screen">
             {/* Header */}
             <div className="flex items-center gap-2">
-                <Chart1 size="28" color="#7E22CE" />
-                <h2 className="text-2xl font-bold text-primary">Reportes LiveFree</h2>
+                <Chart1 size="34" color="#7E22CE" />
+                <h2 className="text-3xl font-bold text-primary">Reportes LiveFree</h2>
             </div>
 
             {/* Reporte de Comisiones */}
             <div className="bg-white shadow rounded-xl p-5 space-y-4 border border-border">
                 <div className="flex items-center gap-2">
                     <Moneys size="22" color="#7E22CE" />
-                    <h3 className="text-lg font-semibold text-foreground">
+                    <h3 className="text-xl font-semibold text-foreground">
                         Reporte de Comisiones
                     </h3>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 text-lg md:grid-cols-3 gap-3">
                     <input
                         type="date"
                         value={filters.startDate}
@@ -136,17 +136,17 @@ export default function Reports() {
                 <button
                     onClick={() => handleDownload("commissions")}
                     disabled={loading}
-                    className="px-5 py-2 bg-primary-light text-white rounded-lg hover:bg-primary transition disabled:opacity-50"
+                    className="px-5 py-2 bg-primary-light text-lg text-white rounded-lg hover:bg-primary transition disabled:opacity-50"
                 >
                     Descargar Comisiones
                 </button>
             </div>
 
             {/* Reporte Cartera por Vendedor */}
-            <div className="bg-white shadow rounded-xl p-5 space-y-4 border border-border">
+            <div className="bg-white shadow rounded-xl text-lg p-5 space-y-4 border border-border">
                 <div className="flex items-center gap-2">
                     <FolderOpen size="22" color="#7E22CE" />
-                    <h3 className="text-lg font-semibold text-foreground">
+                    <h3 className="text-xl font-semibold text-foreground">
                         Cartera por Vendedor
                     </h3>
                 </div>
@@ -173,7 +173,7 @@ export default function Reports() {
                 <button
                     onClick={() => handleDownload("carteraVendedor")}
                     disabled={loading}
-                    className="px-5 py-2 bg-primary-light text-white rounded-lg hover:bg-primary transition disabled:opacity-50"
+                    className="px-5 py-2 bg-primary-light text-lg text-white rounded-lg hover:bg-primary transition disabled:opacity-50"
                 >
                     Descargar Cartera
                 </button>
@@ -183,7 +183,7 @@ export default function Reports() {
             <div className="bg-white shadow rounded-xl p-5 space-y-4 border border-border">
                 <div className="flex items-center gap-2">
                     <ClipboardText size="22" color="#7E22CE" />
-                    <h3 className="text-lg font-semibold text-foreground">
+                    <h3 className="text-xl font-semibold text-foreground">
                         Cartera General
                     </h3>
                 </div>
@@ -191,7 +191,7 @@ export default function Reports() {
                 <button
                     onClick={() => handleDownload("carteraGeneral")}
                     disabled={loading}
-                    className="px-5 py-2 bg-primary-light text-white rounded-lg hover:bg-primary transition disabled:opacity-50"
+                    className="px-5 py-2 bg-primary-light text-lg text-white rounded-lg hover:bg-primary transition disabled:opacity-50"
                 >
                     Descargar Cartera
                 </button>

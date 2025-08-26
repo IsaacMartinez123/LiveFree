@@ -1,4 +1,3 @@
-
 import {
     useReactTable,
     getCoreRowModel,
@@ -132,7 +131,7 @@ export default function ProductsPage() {
                     }
                     return (
                         <span
-                            className={`px-3 py-1 rounded-full text-base sm:text-lg font-semibold
+                            className={`px-3 py-1 rounded-full text-lg sm:text-xl font-semibold
                                 ${status === 'agotado' ? 'bg-yellow-100 text-yellow-700' :
                                     status === 'disponible' ? 'bg-green-100 text-green-700' :
                                         status === 'sobrevendido' ? 'bg-red-100 text-red-700' : ''
@@ -154,9 +153,9 @@ export default function ProductsPage() {
                             setSelectedProduct(row.original);
                             setIsModalOpen(true);
                         }}
-                        className="text-sm text-blue-600 hover:underline"
+                        className="text-lg text-blue-600 hover:underline"
                     >
-                        <Edit size="20" color="#7E22CE" />
+                        <Edit size="30" color="#7E22CE" />
                     </button>
                 ),
             },
@@ -194,7 +193,7 @@ export default function ProductsPage() {
             {error && <div className="text-center text-red-500">Error: {error}</div>}
 
             <div className="p-4 sm:p-6">
-                <h1 className="text-2xl font-bold mb-4" style={{ color: '#7E22CE' }}>
+                <h1 className="text-3xl font-bold mb-12" style={{ color: '#7E22CE' }}>
                     Gestión de Productos
                 </h1>
                 <div className="mb-4">
@@ -221,7 +220,7 @@ export default function ProductsPage() {
 
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary transition text-base sm:text-lg w-full sm:w-auto"
+                        className="bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary transition text-base sm:text-xl w-full sm:w-auto"
                     >
                         Registrar Producto
                     </button>
@@ -246,7 +245,7 @@ export default function ProductsPage() {
                                     {table.getRowModel().rows.map(row => (
                                         <tr key={row.id} className="border-t border-gray-200 hover:bg-gray-100 transition-colors">
                                             {row.getVisibleCells().map(cell => (
-                                                <td key={cell.id} className="px-4 py-2 whitespace-nowrap">
+                                                <td key={cell.id} className="px-4 py-3 whitespace-nowrap text-lg sm:text-xl">
                                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                 </td>
                                             ))}
@@ -256,14 +255,14 @@ export default function ProductsPage() {
                             </table>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row justify-end items-center mt-4 gap-2 text-sm">
+                        <div className="flex flex-col sm:flex-row justify-end items-center mt-4 gap-2 text-sm sm:text-base">
                             <div className="flex items-center gap-2">
                                 <button
                                     className="px-3 py-1 hover:bg-purple-100 rounded disabled:opacity-50 disabled:cursor-not-allowed"
                                     onClick={() => table.previousPage()}
                                     disabled={!table.getCanPreviousPage()}
                                 >
-                                    <ArrowCircleLeft size="25" color="#7E22CE" />
+                                    <ArrowCircleLeft size="30" color="#7E22CE" />
                                 </button>
 
                                 <span className="mx-2 text-gray-700">
@@ -275,7 +274,7 @@ export default function ProductsPage() {
                                     onClick={() => table.nextPage()}
                                     disabled={!table.getCanNextPage()}
                                 >
-                                    <ArrowCircleRight size="25" color="#7E22CE" />
+                                    <ArrowCircleRight size="30" color="#7E22CE" />
                                 </button>
                             </div>
                         </div>

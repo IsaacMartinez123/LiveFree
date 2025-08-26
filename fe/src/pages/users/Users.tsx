@@ -6,8 +6,7 @@ import {
     flexRender,
     ColumnDef,
 } from '@tanstack/react-table';
-import { useMemo, useState } from 'react';
-import { useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { fetchUsers, toggleUserStatus, User } from '../../redux/users/usersThunk';
 import { ArrowCircleLeft, ArrowCircleRight, Edit, Refresh } from 'iconsax-reactjs';
@@ -18,9 +17,7 @@ import { toast } from 'react-toastify';
 export default function Users() {
 
     const [globalFilter, setGlobalFilter] = useState('');
-
     const [isModalOpen, setIsModalOpen] = useState(false);
-
     const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
 
     const loggedUser = useAppSelector(state => state.auth.user);
@@ -44,7 +41,7 @@ export default function Users() {
                 const status = getValue() as boolean | number;
                 return (
                     <span
-                        className={`px-3 py-1 rounded-full text-md font-semibold
+                        className={`px-3 py-1 rounded-full text-lg sm:text-xl font-semibold
                                 ${status ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}
                             `}
                     >
@@ -63,10 +60,10 @@ export default function Users() {
                             setSelectedUser(row.original);
                             setIsModalOpen(true);
                         }}
-                        className="text-sm text-blue-600 hover:underline"
+                        className="text-lg text-blue-600 hover:underline"
                         title="Editar"
                     >
-                        <Edit size="20" color="#7E22CE" />
+                        <Edit size="30" color="#7E22CE" />
                     </button>
                     {row.original.id !== loggedUser?.id && (
                         <button
@@ -78,16 +75,16 @@ export default function Users() {
                                         dispatch(fetchUsers());
                                     });
                             }}
-                            className={`text-sm ${row.original.status ? 'text-red-600' : 'text-green-600'} hover:underline`}
+                            className={`text-lg ${row.original.status ? 'text-red-600' : 'text-green-600'} hover:underline`}
                             title={row.original.status ? "Desactivar" : "Activar"}
                         >
-                            <Refresh size="20" color={row.original.status ? "#dc2626" : "#16a34a"} />
+                            <Refresh size="30" color={row.original.status ? "#dc2626" : "#16a34a"} />
                         </button>
                     )}
                 </div>
             ),
         },
-    ], []);
+    ], [loggedUser]);
 
 
     const dispatch = useAppDispatch();
@@ -117,7 +114,7 @@ export default function Users() {
             {error && <div className="text-center text-red-500">Error: {error}</div>}
 
             <div className="p-4 sm:p-6">
-                <h1 className="text-2xl font-bold mb-4" style={{ color: '#7E22CE' }}>
+                <h1 className="text-3xl font-bold mb-12" style={{ color: '#7E22CE' }}>
                     Gestión de Usuarios
                 </h1>
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
@@ -130,14 +127,14 @@ export default function Users() {
                     />
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary transition text-base sm:text-lg w-full sm:w-auto"
+                        className="bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary transition text-base sm:text-xl w-full sm:w-auto"
                     >
                         Registrar Usuario
                     </button>
                 </div>
                 {!loading && !error && (
                     <>
-                        <div className="overflow-x-auto rounded shadow">
+                        <div className="overflow-x-auto rounded-lg shadow">
                             <table className="min-w-full bg-white text-left text-base sm:text-lg">
                                 <thead className="bg-purple-100">
                                     {table.getHeaderGroups().map(headerGroup => (
@@ -155,7 +152,7 @@ export default function Users() {
                                     {table.getRowModel().rows.map(row => (
                                         <tr key={row.id} className="border-t border-gray-200 hover:bg-gray-100 transition-colors">
                                             {row.getVisibleCells().map(cell => (
-                                                <td key={cell.id} className="px-4 py-2 whitespace-nowrap">
+                                                <td key={cell.id} className="px-4 py-3 whitespace-nowrap text-lg sm:text-xl">
                                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                 </td>
                                             ))}
@@ -165,14 +162,14 @@ export default function Users() {
                             </table>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row justify-end items-center mt-4 gap-2 text-sm">
+                        <div className="flex flex-col sm:flex-row justify-end items-center mt-4 gap-2 text-sm sm:text-base">
                             <div className="flex items-center gap-2">
                                 <button
-                                    className="px-3 py-1 hover:bg-purple-100 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-3 py-1 hover:bg-purple-100 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
                                     onClick={() => table.previousPage()}
                                     disabled={!table.getCanPreviousPage()}
                                 >
-                                    <ArrowCircleLeft size="25" color="#7E22CE" />
+                                    <ArrowCircleLeft size="30" color="#7E22CE" />
                                 </button>
 
                                 <span className="mx-2 text-gray-700">
@@ -180,11 +177,11 @@ export default function Users() {
                                 </span>
 
                                 <button
-                                    className="px-3 py-1 hover:bg-purple-100 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-3 py-1 hover:bg-purple-100 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
                                     onClick={() => table.nextPage()}
                                     disabled={!table.getCanNextPage()}
                                 >
-                                    <ArrowCircleRight size="25" color="#7E22CE" />
+                                    <ArrowCircleRight size="30" color="#7E22CE" />
                                 </button>
                             </div>
                         </div>

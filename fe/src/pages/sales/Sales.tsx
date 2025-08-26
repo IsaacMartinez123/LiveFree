@@ -339,7 +339,7 @@ export default function SalesPage() {
 
 
             <div className="p-4 sm:p-6">
-                <h1 className="text-2xl font-bold mb-4" style={{ color: '#7E22CE' }}>
+                <h1 className="text-3xl font-bold mb-12" style={{ color: '#7E22CE' }}>
                     Gestión de Ventas
                 </h1>
                 <div className="mb-4">

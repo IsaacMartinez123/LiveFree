@@ -235,6 +235,12 @@ class CarteraGeneralExport implements FromCollection, WithEvents
                 foreach (range('A', 'G') as $col) {
                     $sheet->getColumnDimension($col)->setAutoSize(true);
                 }
+
+                 // ===== CONFIGURACIÓN DE IMPRESIÓN PARA EVITAR QUE SE CORTE =====
+                $sheet->getPageSetup()
+                    ->setFitToPage(true)
+                    ->setFitToWidth(1)
+                    ->setFitToHeight(0); // Esto hace que el ancho se ajuste a una página, pero la altura puede ocupar varias.
             }
         ];
     }

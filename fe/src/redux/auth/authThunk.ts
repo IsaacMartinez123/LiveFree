@@ -2,6 +2,7 @@ import { AppDispatch } from '../store';
 import { loginStart, loginSuccess, loginFailure } from './authSlice';
 import api from '../../services/api';
 import { NavigateFunction } from 'react-router-dom';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
 export const loginUser = (email: string, password: string, navigate: NavigateFunction) => async (dispatch: AppDispatch) => {
     try {
@@ -19,3 +20,18 @@ export const loginUser = (email: string, password: string, navigate: NavigateFun
         dispatch(loginFailure(apiMsg));
     }
 };
+
+export const logoutUser = createAsyncThunk(
+    'auth/logoutUser',
+    async (_, { rejectWithValue }) => {
+        try {
+            await api.post('/logout');
+            return 'Sesión cerrada exitosamente';
+        } catch (error: any) {
+            if (error.response) {
+                return rejectWithValue(error.response.data.message || 'Error al cerrar sesión.');
+            }
+            return rejectWithValue('Error de red o de servidor.');
+        }
+    }
+);

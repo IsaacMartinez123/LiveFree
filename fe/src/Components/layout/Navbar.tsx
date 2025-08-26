@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { ProfileCircle } from "iconsax-reactjs";
 import { useAppSelector, useAppDispatch } from "../../redux/hooks";
-import { logout } from "../../redux/auth/authSlice";
+import { logoutUser } from "../../redux/auth/authThunk";
 
 export default function Navbar() {
     const user = useAppSelector(state => state.auth.user);
@@ -31,7 +31,7 @@ export default function Navbar() {
             </div>
 
             {/* PERFIL DE USUARIO */}
-            <div className="relative flex items-center gap-2 text-sm sm:text-base" ref={menuRef}>
+            <div className="relative flex items-center gap-2 text-lg sm:text-lg" ref={menuRef}>
                 <button
                     className="flex items-center gap-2 focus:outline-none"
                     onClick={() => setOpen(o => !o)}
@@ -47,7 +47,7 @@ export default function Navbar() {
                         <button
                             className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                             onClick={() => {
-                                dispatch(logout());
+                                dispatch(logoutUser());
                                 setOpen(false);
                             }}
                         >

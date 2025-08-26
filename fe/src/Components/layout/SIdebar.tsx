@@ -45,7 +45,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
                 )}
                 {sidebarOpen && (
                     <>
-                        <h1 className="text-xl sm:text-2xl font-bold text-primary">LiveFree</h1>
+                        {/* Título adaptado para diferentes pantallas */}
+                        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-primary">LiveFree</h1>
                         <button
                             className="ml-auto p-2 rounded hover:bg-primary-light transition"
                             onClick={() => {
@@ -64,9 +65,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
             </div>
 
             <nav className="mt-4 sm:mt-6">
-                <ul className="space-y-4 sm:space-y-5 text-sm sm:text-base">
+                {/* Texto del menú adaptado para diferentes pantallas */}
+                <ul className="space-y-4 sm:space-y-5 text-sm md:text-base lg:text-lg">
                     <li>
-                        <button 
+                        <button
                             className="pl-6 py-2 text-form-label font-semibold hover:text-primary-dark flex items-center gap-x-4"
                             onClick={() => {
                                 navigate("/reports");
@@ -94,10 +96,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
                                 ))}
                         </button>
                         {sidebarOpen && openUsuarios && (
-                            <ul className="ml-4 mt-1 space-y-1">
+                            // Texto del submenú adaptado para diferentes pantallas
+                            <ul className="ml-4 mt-1 space-y-1 text-sm md:text-base lg:text-lg">
                                 <li>
                                     <button
-                                        className="pl-6 py-2 text-form-label hover:text-primary-dark"
+                                        className="pl-6 py-2 text-form-label hover:text-primary-dark w-full text-left"
                                         onClick={() => {
                                             setOpenUsuarios(false);
                                             navigate("/users");
@@ -108,7 +111,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
                                 </li>
                                 <li>
                                     <button
-                                        className="pl-6 py-2 text-form-label hover:text-primary-dark"
+                                        className="pl-6 py-2 text-form-label hover:text-primary-dark w-full text-left"
                                         onClick={() => {
                                             setOpenUsuarios(false);
                                             navigate("/clients");
@@ -119,7 +122,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
                                 </li>
                                 <li>
                                     <button
-                                        className="pl-6 py-2 text-form-label hover:text-primary-dark"
+                                        className="pl-6 py-2 text-form-label hover:text-primary-dark w-full text-left"
                                         onClick={() => {
                                             setOpenUsuarios(false);
                                             navigate("/sellers");
@@ -161,10 +164,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
                                 ))}
                         </button>
                         {sidebarOpen && openVentas && (
-                            <ul className="ml-4 mt-1 space-y-1">
+                            // Texto del submenú adaptado para diferentes pantallas
+                            <ul className="ml-4 mt-1 space-y-1 text-sm md:text-base lg:text-lg">
                                 <li>
                                     <button
-                                        className="pl-6 py-2 text-form-label hover:text-primary-dark"
+                                        className="pl-6 py-2 text-form-label hover:text-primary-dark w-full text-left"
                                         onClick={() => {
                                             navigate("/sales");
                                         }}
@@ -173,8 +177,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: Props) {
                                     </button>
                                 </li>
                                 <li>
-                                    <button 
-                                        className="pl-6 py-2 text-form-label hover:text-primary-dark"
+                                    <button
+                                        className="pl-6 py-2 text-form-label hover:text-primary-dark w-full text-left"
                                         onClick={() => {
                                             navigate("/payments");
                                         }}

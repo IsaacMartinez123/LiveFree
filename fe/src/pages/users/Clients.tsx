@@ -42,17 +42,17 @@ export default function Clients() {
                                 setSelectedClient(row.original);
                                 setIsModalOpen(true);
                             }}
-                            className="text-sm text-blue-600 hover:underline"
+                            className="text-lg text-blue-600 hover:underline"
                             title="Editar"
                         >
-                            <Edit size="20" color="#7E22CE" />
+                            <Edit size="30" color="#7E22CE" />
                         </button>
                         {/* <button
                             onClick={() => setShowConfirm({ open: true, id: row.original.id })}
-                            className="text-sm text-red-600 hover:underline"
+                            className="text-lg text-red-600 hover:underline"
                             title="Eliminar"
                         >
-                            <Trash size="20" color="#dc2626" />
+                            <Trash size="30" color="#dc2626" />
                         </button> */}
                         <DownloadCustomerLabelButton client={row.original} />
                     </div>
@@ -94,17 +94,17 @@ export default function Clients() {
                         className="bg-white rounded-lg shadow-lg p-6 w-full max-w-xs"
                         onClick={e => e.stopPropagation()}
                     >
-                        <h2 className="text-lg font-semibold mb-4 text-gray-800">¿Eliminar cliente?</h2>
-                        <p className="mb-6 text-red-700">¡Esta acción no se puede deshacer!</p>
+                        <h2 className="text-xl font-semibold mb-4 text-gray-800">¿Eliminar cliente?</h2>
+                        <p className="mb-6 text-red-700 text-lg">¡Esta acción no se puede deshacer!</p>
                         <div className="flex justify-around items-center">
                             <button
-                                className="px-4 py-2 rounded bg-error text-white hover:bg-red-600"
+                                className="px-4 py-2 rounded bg-error text-white hover:bg-red-600 text-lg"
                                 onClick={() => setShowConfirm({ open: false })}
                             >
                                 Cancelar
                             </button>
                             <button
-                                className="px-4 py-2 rounded bg-primary text-white hover:bg-primary-dark"
+                                className="px-4 py-2 rounded bg-primary text-white hover:bg-primary-dark text-lg"
                                 onClick={() => {
                                     if (typeof showConfirm.id !== 'undefined') {
                                         dispatch(deleteClient(showConfirm.id)).then(() => {
@@ -124,7 +124,7 @@ export default function Clients() {
             {error && <div className="text-center text-red-500">Error: {error}</div>}
 
             <div className="p-4 sm:p-6">
-                <h1 className="text-2xl font-bold mb-4" style={{ color: '#7E22CE' }}>
+                <h1 className="text-3xl font-bold mb-12" style={{ color: '#7E22CE' }}>
                     Información de Clientes
                 </h1>
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
@@ -138,7 +138,7 @@ export default function Clients() {
 
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary transition text-base sm:text-lg w-full sm:w-auto"
+                        className="bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary transition text-base sm:text-xl w-full sm:w-auto"
                     >
                         Registrar Cliente
                     </button>
@@ -163,7 +163,7 @@ export default function Clients() {
                                     {table.getRowModel().rows.map(row => (
                                         <tr key={row.id} className="border-t border-gray-200 hover:bg-gray-100 transition-colors">
                                             {row.getVisibleCells().map(cell => (
-                                                <td key={cell.id} className="px-4 py-2 whitespace-nowrap">
+                                                <td key={cell.id} className="px-4 py-3 whitespace-nowrap text-lg sm:text-xl">
                                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                 </td>
                                             ))}
@@ -173,14 +173,14 @@ export default function Clients() {
                             </table>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row justify-end items-center mt-4 gap-2 text-sm">
+                        <div className="flex flex-col sm:flex-row justify-end items-center mt-4 gap-2 text-sm sm:text-base">
                             <div className="flex items-center gap-2">
                                 <button
                                     className="px-3 py-1 hover:bg-purple-100 rounded disabled:opacity-50 disabled:cursor-not-allowed"
                                     onClick={() => table.previousPage()}
                                     disabled={!table.getCanPreviousPage()}
                                 >
-                                    <ArrowCircleLeft size="25" color="#7E22CE" />
+                                    <ArrowCircleLeft size="30" color="#7E22CE" />
                                 </button>
 
                                 <span className="mx-2 text-gray-700">
@@ -192,7 +192,7 @@ export default function Clients() {
                                     onClick={() => table.nextPage()}
                                     disabled={!table.getCanNextPage()}
                                 >
-                                    <ArrowCircleRight size="25" color="#7E22CE" />
+                                    <ArrowCircleRight size="30" color="#7E22CE" />
                                 </button>
                             </div>
                         </div>
