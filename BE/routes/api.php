@@ -50,6 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('returns', ReturnController::class);
 
     Route::get('/reports/cartera-general', [ReportController::class, 'exportCarteraGeneral']);
-    Route::get('/reports/cartera-por-vendedor', [ReportController::class, 'exportCarteraPorVendedor']);
+    Route::get('/reports/cartera-por-vendedor/{id}', [ReportController::class, 'exportCarteraPorVendedor']);
+    Route::get('/reports/commissions/{id}', [ReportController::class, 'exportComisionesPorVendedor']);
     
 });

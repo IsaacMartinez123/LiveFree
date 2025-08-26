@@ -13,7 +13,7 @@ export const loginUser = (email: string, password: string, navigate: NavigateFun
         localStorage.setItem('user', JSON.stringify(user));
         dispatch(loginSuccess(user));
 
-        navigate('/users');
+        navigate('/reports');
     } catch (error: any) {
         const apiMsg = error.response?.data?.error || error.response?.data?.message || 'No se pudo iniciar sesión';
         dispatch(loginFailure(apiMsg));

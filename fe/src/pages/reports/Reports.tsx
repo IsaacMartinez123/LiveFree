@@ -1,3 +1,4 @@
+// Reports.tsx
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
@@ -8,6 +9,7 @@ import {
 } from "../../redux/reports/reportsThunk";
 import { Chart1, ClipboardText, FolderOpen, Moneys } from "iconsax-reactjs";
 import { fetchSellers } from "../../redux/sellers/sellersThunk";
+import { toast } from "react-toastify";
 
 export default function Reports() {
     const dispatch = useAppDispatch();
@@ -25,6 +27,19 @@ export default function Reports() {
     });
 
     const handleDownload = async (type: string) => {
+        if (type === "commissions") {
+            if (!filters.startDate || !filters.endDate || !filters.sellerId) {
+                toast.error("Debes completar todos los filtros");
+                return;
+            }
+        }
+        if (type === "carteraVendedor") {
+            if (!filters.sellerId) {
+                toast.error("Debes seleccionar un vendedor");
+                return;
+            }
+        }
+
         let result;
         switch (type) {
             case "commissions":

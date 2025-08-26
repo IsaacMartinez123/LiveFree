@@ -5,16 +5,22 @@ namespace App\Exports;
 use App\Models\Sale;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class CarteraGeneralExport implements FromCollection, WithEvents
 {
+    /**
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
+        // Se inicializan las variables para los totales generales
+        $grandTotalValor = 0;
+        $grandTotalAbonos = 0;
+        $grandTotalRestante = 0;
+
         $sales = Sale::with(['client', 'seller', 'payments'])
             ->where('status', 'despachada')
             ->get()
@@ -41,9 +47,12 @@ class CarteraGeneralExport implements FromCollection, WithEvents
         ]);
 
         foreach ($sales as $sellerCode => $sellerSales) {
-            // Título vendedor
+            // Obtener el nombre del vendedor del primer elemento del grupo
+            $sellerName = $sellerSales->first()->seller->name ?? '';
+
+            // Título vendedor con código y nombre
             $rows->push([
-                'Factura'        => 'VENDEDOR ' . $sellerCode,
+                'Factura'        => 'VENDEDOR ' . $sellerCode . ' - ' . $sellerName,
                 'Cliente'        => '',
                 'Fecha Despacho' => '',
                 'Valor Total'    => '',
@@ -63,9 +72,11 @@ class CarteraGeneralExport implements FromCollection, WithEvents
                 'Ciudad'         => 'Ciudad',
             ]);
 
-            $totalValor    = 0;
-            $totalAbonos   = 0;
-            $totalRestante = 0;
+            $sellerSales = $sellerSales->sortBy(fn($sale) => $sale->client->name ?? '');
+
+            $totalValor      = 0;
+            $totalAbonos     = 0;
+            $totalRestante   = 0;
 
             foreach ($sellerSales as $sale) {
                 $abonosPend = $sale->payments
@@ -78,9 +89,14 @@ class CarteraGeneralExport implements FromCollection, WithEvents
 
                 $restante = $sale->total - $abonosPend;
 
-                $totalValor    += $sale->total;
-                $totalAbonos   += $abonosPend;
-                $totalRestante += $restante;
+                $totalValor      += $sale->total;
+                $totalAbonos     += $abonosPend;
+                $totalRestante   += $restante;
+
+                // Actualizar los totales generales
+                $grandTotalValor += $sale->total;
+                $grandTotalAbonos += $abonosPend;
+                $grandTotalRestante += $restante;
 
                 $rows->push([
                     'Factura'        => (string) $sale->invoice_number,
@@ -93,7 +109,7 @@ class CarteraGeneralExport implements FromCollection, WithEvents
                 ]);
             }
 
-            // Totales
+            // Totales por vendedor
             $rows->push([
                 'Factura'        => '',
                 'Cliente'        => 'TOTAL',
@@ -116,15 +132,30 @@ class CarteraGeneralExport implements FromCollection, WithEvents
             ]);
         }
 
+        // Tabla de Totales Generales
+        $rows->push([
+            'Factura'        => '',
+            'Cliente'        => '',
+            'Fecha Despacho' => '',
+            'Valor Total'    => '',
+            'Abonos'         => '',
+            'Restante'       => '',
+            'Ciudad'         => '',
+        ]);
+        $rows->push([
+            'Factura'        => 'GRAN TOTAL',
+            'Cliente'        => '',
+            'Fecha Despacho' => '',
+            'Valor Total'    => (float) $grandTotalValor,
+            'Abonos'         => (float) $grandTotalAbonos,
+            'Restante'       => (float) $grandTotalRestante,
+            'Ciudad'         => '',
+        ]);
+
 
         return $rows;
     }
 
-
-    // public function headings(): array
-    // {
-    //     return ['Cod Vendedor', 'Factura', 'Cliente', 'Fecha Despacho', 'Valor Total', 'Abonos', 'Restante', 'Ciudad'];
-    // }
 
     public function registerEvents(): array
     {
@@ -182,6 +213,12 @@ class CarteraGeneralExport implements FromCollection, WithEvents
                             'font' => ['bold' => true],
                             'fill' => ['fillType' => 'solid', 'color' => ['rgb' => 'D9E1F2']],
                         ]);
+                    } elseif (strpos($value, 'GRAN TOTAL') !== false) {
+                        // Estilo para el gran total
+                        $sheet->getStyle("A{$row}:G{$row}")->applyFromArray([
+                            'font' => ['bold' => true, 'size' => 12],
+                            'fill' => ['fillType' => 'solid', 'color' => ['rgb' => 'B2DFDB']],
+                        ]);
                     }
                 }
 
@@ -190,8 +227,8 @@ class CarteraGeneralExport implements FromCollection, WithEvents
                     ->getBorders()->getAllBorders()
                     ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
 
-                // Formatos de número (columnas E-G)
-                $sheet->getStyle("D3:G{$highestRow}")
+                // Formatos de número (columnas D, E, F)
+                $sheet->getStyle("D3:F{$highestRow}")
                     ->getNumberFormat()->setFormatCode('#,##0');
 
                 // Autosize columnas

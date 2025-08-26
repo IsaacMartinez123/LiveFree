@@ -5,7 +5,7 @@ interface ReportsState {
     loading: boolean;
     error: string | null;
     commissions: any[];
-    carteraPorVendedor: any[];
+    carteraPorVendedor: boolean;
     carteraGeneral: any[];
 }
 
@@ -13,7 +13,7 @@ const initialState: ReportsState = {
     loading: false,
     error: null,
     commissions: [],
-    carteraPorVendedor: [],
+    carteraPorVendedor: false,
     carteraGeneral: []
 };
 
@@ -35,13 +35,17 @@ const reportsSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message ?? "Error al cargar comisiones";
             })
-            .addCase(fetchCarteraPorVendedor.fulfilled, (state, action) => {
-                state.carteraPorVendedor = action.payload;
+            .addCase(fetchCarteraPorVendedor.fulfilled, (state) => {
+                state.carteraPorVendedor = true;
             })
+            .addCase(fetchCarteraPorVendedor.rejected, (state) => {
+                state.carteraPorVendedor = false;
+            })
+
             .addCase(fetchCarteraGeneral.fulfilled, (state, action) => {
                 state.carteraGeneral = action.payload;
             });
-    },
+},
 });
 
 export default reportsSlice.reducer;

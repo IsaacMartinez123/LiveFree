@@ -86,10 +86,21 @@ export default function SalesPage() {
                     <SortableHeader column={column} label="Fecha de Despachada" />
                 ),
                 cell: ({ getValue }) => {
-                    const value = getValue<string>();                    
-                    return value ? new Date(value).toLocaleDateString('es-ES') : '-';
+                    const value = getValue();
+                    if (!value) return '-';
+
+                    // Crea la fecha con un formato que respete la zona horaria local
+                    const date = new Date(value + 'T00:00:00');
+
+                    // Formatea la fecha al formato DD/MM/YYYY
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const year = date.getFullYear();
+
+                    return `${day}/${month}/${year}`;
                 }
-            },
+            }
+            ,
             {
                 accessorKey: 'total',
                 header: ({ column }) => (
