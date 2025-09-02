@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     textLine: {
         fontSize: 10,
         marginBottom: 2,
-        textAlign: 'right',
+        textAlign: "right",
         paddingBottom: 2,
     },
     bold: {
@@ -94,6 +94,18 @@ const styles = StyleSheet.create({
         marginTop: 2,
     },
 
+    motivoContainer: {
+        marginTop: 20,
+    },
+    motivoLabel: {
+        fontSize: 10,
+        fontWeight: "bold",
+        marginBottom: 4,
+    },
+    motivoText: {
+        fontSize: 10,
+        lineHeight: 1.4,
+    },
 });
 
 export default function ReturnDetailPDF({ devolucion }: Props) {
@@ -167,6 +179,11 @@ export default function ReturnDetailPDF({ devolucion }: Props) {
                     </View>
                 </View>
 
+                {/* Motivo */}
+                <View style={styles.motivoContainer}>
+                    <Text style={styles.motivoLabel}>Motivo de la devolución:</Text>
+                    <Text style={styles.motivoText}>{devolucion.reason || "No especificado"}</Text>
+                </View>
             </Page>
         </Document>
     );

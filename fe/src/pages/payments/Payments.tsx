@@ -119,16 +119,18 @@ export default function Payments() {
                         >
                             <Eye size="30" />
                         </button>
-                        <button
-                            onClick={() => {
-                                setSelectedPayment(row.original);
-                                setIsModalOpen(true);
-                            }}
-                            className="text-blue-600 hover:underline"
-                            title="Agregar Abono"
-                        >
-                            <DollarCircle size="30" color="#7E22CE" />
-                        </button>
+                        {row.original.status !== 'cancelado' && (
+                            <button
+                                onClick={() => {
+                                    setSelectedPayment(row.original);
+                                    setIsModalOpen(true);
+                                }}
+                                className="text-blue-600 hover:underline"
+                                title="Agregar Abono"
+                            >
+                                <DollarCircle size="30" color="#7E22CE" />
+                            </button>
+                        )}
                         <DownloadPaymentButton payment={row.original} />
                     </div>
                 );

@@ -1,20 +1,17 @@
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { DocumentDownload } from 'iconsax-reactjs';
 import CustomerLabelPDF from './CustomerLabelPDF';
+import { Client, Label } from '../../redux/clients/clientsThunk';
 
-export type Client = {
-    name: string;
-    document: string;
-    address: string;
-    city: string;
-    phone: string;
-    store_name: string;
+type Props = {
+    client: Client;
+    label: Label
 };
 
-const DownloadCustomerLabelButton = ({ client }: { client: Client }) => {
+const DownloadCustomerLabelButton = ({ client, label }: Props ) => {
     return (
         <PDFDownloadLink
-            document={<CustomerLabelPDF client={client} />}
+            document={<CustomerLabelPDF client={client} label={label} />}
             fileName={`Rotulo-${client.name || 'cliente'}.pdf`}
         >
             {({ loading }) =>

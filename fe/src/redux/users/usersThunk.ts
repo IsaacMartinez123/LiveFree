@@ -9,7 +9,6 @@ export type User = {
     status: boolean;
 };
 
-
 export const fetchUsers = createAsyncThunk(
     'users/fetchUsers',
     async (_, thunkAPI) => {
@@ -18,6 +17,18 @@ export const fetchUsers = createAsyncThunk(
             return response.data;
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error.response?.data?.message || 'Error al obtener usuarios');
+        }
+    }
+);
+
+export const fetchRoles = createAsyncThunk(
+    'roles/fetchRoles',
+    async (_, thunkAPI) => {
+        try {
+            const response = await api.get('/roles');
+            return response.data;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || 'Error al obtener roles');
         }
     }
 );

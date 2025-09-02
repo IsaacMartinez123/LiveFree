@@ -105,7 +105,7 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess, sale }: Prop
 
     const clientOptions = clients.map(client => ({
         value: client.id,
-        label: client.name,
+        label: `${client.name} - ${client.document}`,
         document: client.document,
     }));
     const sellerOptions = sellers.map(seller => ({
@@ -193,7 +193,7 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess, sale }: Prop
                                             (item.size_4XL || 0);
                                         return cantidad * Number(item.price);
                                     });
-
+                                    
                                     const total = subtotals.reduce((acc, curr) => acc + curr, 0);
 
                                     return (
@@ -297,6 +297,7 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess, sale }: Prop
                                                                         {['size_S', 'size_M', 'size_L', 'size_XL', 'size_2XL', 'size_3XL', 'size_4XL'].map(size => (
                                                                             <th key={size} className="px-4 py-3 border text-base">{size.replace('size_', '')}</th>
                                                                         ))}
+                                                                        <th className="px-4 py-3 border text-base">Cantidad</th>
                                                                         <th className="px-4 py-3 border text-base">Precio</th>
                                                                         <th className="px-4 py-3 border text-base">Subtotal</th>
                                                                         <th className="px-4 py-3 border text-base">Acción</th>
@@ -330,11 +331,16 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess, sale }: Prop
                                                                                             name={`items[${index}].${size}`}
                                                                                             type="number"
                                                                                             min={0}
+                                                                                            onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                                                                if (parseInt(e.target.value) < 0) {
+                                                                                                    e.target.value = "0";
+                                                                                                }
+                                                                                            }}
                                                                                             className="w-16 text-center border rounded text-base"
                                                                                         />
                                                                                     </td>
                                                                                 ))}
-                                                                                {/* <td className="px-4 py-2 border text-base">${Number(item.price).toLocaleString()}</td> */}
+                                                                                <td className="px-4 py-2 border text-base">{cantidad}</td>
                                                                                 <td className="px-4 py-2 border">
                                                                                     <Field name={`items[${index}].price`}>
                                                                                         {({ field, form }: any) => (
@@ -360,7 +366,7 @@ export default function AddSale({ isOpen, onClose, onSubmitSuccess, sale }: Prop
                                                                                 <td className="px-4 py-2 border text-center">
                                                                                     <button
                                                                                         type="button"
-                                                                                        onClick={() => remove(index)}                                                                                        title="Eliminar producto"
+                                                                                        onClick={() => remove(index)} title="Eliminar producto"
                                                                                     >
                                                                                         <CloseCircle size={25} className="text-error hover:text-red-700" />
                                                                                     </button>

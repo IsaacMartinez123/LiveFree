@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchUsers, createUser, updateUser, toggleUserStatus, User } from './usersThunk';
+import { fetchUsers, createUser, updateUser, toggleUserStatus, User, fetchRoles } from './usersThunk';
 
 const initialState = {
     users:  [] as User[], // Cambia 'any' por el tipo de usuario que estés utilizando
+    roles: [] as { id: number; rol_name: string }[],
     loading: false,
     error: null as string | null,
 };
@@ -26,7 +27,19 @@ const usersSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload as string;
             })
-
+            // Obtener Roles
+            .addCase(fetchRoles.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchRoles.fulfilled, (state, action) => {
+                state.loading = false;
+                state.roles = action.payload;
+            })
+            .addCase(fetchRoles.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
             // Crear usuario
             .addCase(createUser.pending, (state) => {
                 state.loading = true;

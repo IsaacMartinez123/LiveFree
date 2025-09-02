@@ -1,5 +1,4 @@
 // components/pdf/CustomerLabelPDF.tsx
-import React from 'react';
 import {
     Document,
     Page,
@@ -8,8 +7,7 @@ import {
     StyleSheet,
     Font
 } from '@react-pdf/renderer';
-import { Client } from './DownloadCustomerLabelButton';
-
+import { Client, Label } from '../../redux/clients/clientsThunk';
 // Estilos del PDF
 const styles = StyleSheet.create({
     page: { padding: 10, fontSize: 10, fontFamily: 'Helvetica' },
@@ -31,7 +29,7 @@ const styles = StyleSheet.create({
     label: {
         width: '30%',
         fontWeight: 'bold',
-        color: '#7E22CE', // primary-dark
+        color: '#7E22CE',
         fontSize: 19,
     },
     value: {
@@ -40,14 +38,17 @@ const styles = StyleSheet.create({
         color: '#111827',
     },
     sectionEmpresa: {
-        backgroundColor: '#FDE68A', // algo similar al fondo naranja claro
+        backgroundColor: '#FDE68A', // fondo naranja claro
         padding: 10,
         borderRadius: 6,
+        alignItems: 'center',   // 🔹 centra horizontalmente todo
+        justifyContent: 'center', // 🔹 centra verticalmente si hay espacio extra
     },
     empresaText: {
         fontSize: 18,
         marginBottom: 4,
         color: '#111827',
+        textAlign: 'center', // 🔹 asegura que cada línea esté centrada
     },
     empresaNombre: {
         fontSize: 20,
@@ -56,46 +57,52 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#7E22CE',
     },
+
 });
 
 type Props = {
     client: Client;
+    label: Label
 };
 
-const CustomerLabelPDF = ({ client }: Props) => (
-    <Document>
-        <Page size="A5" orientation="landscape" style={styles.page}>
-            <View style={styles.container}>
-                {/* Datos del Cliente */}
-                <View style={styles.sectionCliente}>
-                    {[
-                        ['SEÑORES:', client.name],
-                        ['CEDULA:', client.document],
-                        ['DIRECCION:', client.address],
-                        ['ALMACEN:', client.store_name],
-                        ['TELEFONO:', client.phone],
-                        ['CIUDAD:', client.city],
-                    ].map(([label, value], idx) => (
-                        <View style={styles.row} key={idx}>
-                            <Text style={styles.label}>{label}</Text>
-                            <Text style={styles.value}>{value}</Text>
-                        </View>
-                    ))}
-                </View>
+const CustomerLabelPDF = ({ client, label }: Props) => {
 
-                {/* Datos fijos de empresa */}
-                <View style={styles.sectionEmpresa}>
-                    <Text style={styles.empresaText}>LIVE FREE</Text>
-                    <Text style={styles.empresaText}>CC: 98.624.755</Text>
-                    <Text style={styles.empresaText}>
-                        CALLE 18 # 71 - 24 BELEN LAS PLAYAS
-                    </Text>
-                    <Text style={styles.empresaText}>TEL: 3206823281 (SAMUEL CARDONA)</Text>
-                    <Text style={styles.empresaNombre}>MEDELLIN - ANTIOQUIA</Text>
+    return (
+        <Document>
+            <Page size="A5" orientation="landscape" style={styles.page}>
+                <View style={styles.container}>
+                    {/* Datos del Cliente */}
+                    <View style={styles.sectionCliente}>
+                        {[
+                            ['SEÑORES:', client.name],
+                            ['CEDULA:', client.document],
+                            ['DIRECCION:', client.address],
+                            ['ALMACEN:', client.store_name],
+                            ['TELEFONO:', client.phone],
+                            ['CIUDAD:', client.city],
+                        ].map(([label, value], idx) => (
+                            <View style={styles.row} key={idx}>
+                                <Text style={styles.label}>{label}</Text>
+                                <Text style={styles.value}>{value}</Text>
+                            </View>
+                        ))}
+                    </View>
+
+                    {/* Datos fijos de empresa */}
+                    <View style={styles.sectionEmpresa}>
+                        <Text style={styles.empresaText}>{String(label?.name || '')}</Text>
+                        <Text style={styles.empresaText}>CC: {String(label?.document || '')}</Text>
+                        <Text style={styles.empresaText}>{String(label?.address || '')}</Text>
+                        <Text style={styles.empresaText}>
+                            TEL: {String(label?.phone || '')} ({String(label?.responsible || '')})
+                        </Text>
+                        <Text style={styles.empresaNombre}>{String(label?.city || '')}</Text>
+
+                    </View>
                 </View>
-            </View>
-        </Page>
-    </Document>
-);
+            </Page>
+        </Document>
+    )
+};
 
 export default CustomerLabelPDF;

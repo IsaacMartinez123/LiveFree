@@ -8,22 +8,22 @@ interface Props {
 }
 
 export default function ReturnDetail({ isOpen, onClose, devolucion }: Props) {
-    
+
     useEffect(() => {
         const handleEsc = (event: KeyboardEvent) => {
             if (event.key === "Escape" && isOpen) {
                 onClose();
             }
         };
-        
+
         document.addEventListener("keydown", handleEsc);
         return () => {
             document.removeEventListener("keydown", handleEsc);
         };
     }, [isOpen, onClose]);
-    
+
     if (!isOpen || !devolucion) return null;
-    
+
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30"
@@ -129,6 +129,11 @@ export default function ReturnDetail({ isOpen, onClose, devolucion }: Props) {
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                    {/* Motivo de la devolución */}
+                    <div className="mt-4 p-4 border rounded bg-gray-50">
+                        <h4 className="font-bold text-purple-600 mb-2">Motivo de la devolución:</h4>
+                        <p className="text-gray-700">{devolucion.reason}</p>
                     </div>
                 </div>
 

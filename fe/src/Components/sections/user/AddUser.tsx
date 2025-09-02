@@ -1,11 +1,11 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { Fragment, useMemo } from 'react';
+import { Fragment, useEffect, useMemo } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { createUser, updateUser } from '../../../redux/users/usersThunk';
-import { useAppDispatch } from '../../../redux/hooks';
+import { createUser, fetchRoles, updateUser } from '../../../redux/users/usersThunk';
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { toast } from 'react-toastify';
-
+import Select from 'react-select';
 
 type UserData = {
     id: number;
@@ -45,6 +45,12 @@ export default function AddUser({ isOpen, onClose, onSubmitSuccess, user }: Prop
         }),
     }), [isEdit]);
 
+    const { roles } = useAppSelector(state => state.users);
+
+    useEffect(() => {
+        dispatch(fetchRoles());
+    }, []);
+
     const handleSubmit = async (values: any, { resetForm }: any) => {
         try {
             if (isEdit) {
@@ -60,8 +66,31 @@ export default function AddUser({ isOpen, onClose, onSubmitSuccess, user }: Prop
             onClose();
         } catch (error: any) {
             const apiMessage = error.response?.data?.message || error.message;
-            toast.error(apiMessage || 'Error al guardar el cliente');
+            toast.error(apiMessage || 'Error al guardar el usuario');
         }
+    };
+
+    const RoleOptions = roles.map(rol => ({
+        value: rol.id,
+        label: rol.rol_name,
+    }));
+
+    const customSelectStyles = {
+        control: (provided: any, state: any) => ({
+            ...provided,
+            borderColor: '#d1d5db',
+            boxShadow: state.isFocused ? '0 0 0 1.5px #7e22ce' : provided.boxShadow,
+            '&:hover': { borderColor: '#7e22ce' },
+            borderRadius: '0.375rem',
+            minHeight: '2.5rem'
+        }),
+        option: (provided: any, state: any) => ({
+            ...provided,
+            backgroundColor: state.isFocused ? '#ede9fe' : 'white',
+            color: state.isFocused ? '#7e22ce' : '#111827',
+            cursor: 'pointer'
+        }),
+        menu: (provided: any) => ({ ...provided, zIndex: 9999 })
     };
 
     return (
@@ -94,66 +123,67 @@ export default function AddUser({ isOpen, onClose, onSubmitSuccess, user }: Prop
                                 {isEdit ? 'Editar Usuario' : 'Registrar Usuario'}
                             </Dialog.Title>
 
-                            <Formik
-                                initialValues={initialValues}
-                                validationSchema={validationSchema}
-                                enableReinitialize
-                                onSubmit={handleSubmit}
-                            >
-                                <Form className="space-y-5">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label htmlFor="name" className="block text-sm font-medium">Nombre</label>
-                                            <Field name="name" className="input-form w-full" />
-                                            <ErrorMessage name="name" component="div" className="text-red-500 text-xs" />
-                                        </div>
-                                        <div>
-                                            <label htmlFor="email" className="block text-sm font-medium">Correo</label>
-                                            <Field name="email" type="email" className="input-form w-full" />
-                                            <ErrorMessage name="email" component="div" className="text-red-500 text-xs" />
-                                        </div>
-                                    </div>
+                            <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
+                                {({ values, setFieldValue }) => {
+                                    return (
+                                        <Form className="space-y-5">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label htmlFor="name" className="block text-sm font-medium">Nombre</label>
+                                                    <Field name="name" className="input-form w-full" />
+                                                    <ErrorMessage name="name" component="div" className="text-red-500 text-xs" />
+                                                </div>
+                                                <div>
+                                                    <label htmlFor="email" className="block text-sm font-medium">Correo</label>
+                                                    <Field name="email" type="email" className="input-form w-full" />
+                                                    <ErrorMessage name="email" component="div" className="text-red-500 text-xs" />
+                                                </div>
+                                            </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label htmlFor="password" className="block text-sm font-medium">Contraseña</label>
-                                            <Field name="password" type="password" className="input-form w-full" />
-                                            <ErrorMessage name="password" component="div" className="text-red-500 text-xs" />
-                                        </div>
-                                        <div>
-                                            <label htmlFor="confirmPassword" className="block text-sm font-medium">Confirma contraseña</label>
-                                            <Field name="confirmPassword" type="password" className="input-form w-full" />
-                                            <ErrorMessage name="confirmPassword" component="div" className="text-red-500 text-xs" />
-                                        </div>
-                                    </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label htmlFor="password" className="block text-sm font-medium">Contraseña</label>
+                                                    <Field name="password" type="password" className="input-form w-full" />
+                                                    <ErrorMessage name="password" component="div" className="text-red-500 text-xs" />
+                                                </div>
+                                                <div>
+                                                    <label htmlFor="confirmPassword" className="block text-sm font-medium">Confirma contraseña</label>
+                                                    <Field name="confirmPassword" type="password" className="input-form w-full" />
+                                                    <ErrorMessage name="confirmPassword" component="div" className="text-red-500 text-xs" />
+                                                </div>
+                                            </div>
 
-                                    <div>
-                                        <label htmlFor="rol_id" className="block text-sm font-medium">Rol</label>
-                                        <Field as="select" name="rol_id" className="input-form w-full">
-                                            <option value="">Selecciona un rol</option>
-                                            <option value="1">Administrador</option>
-                                            <option value="2">Vendedor</option>
-                                            <option value="3">Cliente</option>
-                                        </Field>
-                                        <ErrorMessage name="rol_id" component="div" className="text-red-500 text-xs" />
-                                    </div>
+                                            <div>
+                                                <label htmlFor="rol_id" className="block text-sm font-medium">Rol</label>
+                                                <Select
+                                                    options={RoleOptions}
+                                                    value={RoleOptions.find(option => option.value === Number(values.rol_id)) || null}
+                                                    onChange={option => setFieldValue('rol_id', option?.value || 0)}
+                                                    placeholder="Seleccione un cliente"
+                                                    styles={customSelectStyles}
+                                                />
+                                                <ErrorMessage name="rol_id" component="div" className="text-red-500 text-xs" />
+                                            </div>
 
-                                    <div className="flex flex-col sm:flex-row justify-center gap-10 pt-2">
-                                        <button
-                                            type="button"
-                                            onClick={onClose}
-                                            className="bg-error text-white px-6 py-2 rounded hover:bg-red-600 w-full sm:w-auto"
-                                        >
-                                            Cancelar
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            className="bg-primary text-white px-6 py-2 rounded hover:bg-primary-dark w-full sm:w-auto"
-                                        >
-                                            {isEdit ? 'Editar' : 'Registrar'}
-                                        </button>
-                                    </div>
-                                </Form>
+                                            <div className="flex flex-col sm:flex-row justify-center gap-10 pt-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={onClose}
+                                                    className="bg-error text-white px-6 py-2 rounded hover:bg-red-600 w-full sm:w-auto"
+                                                >
+                                                    Cancelar
+                                                </button>
+                                                <button
+                                                    type="submit"
+                                                    className="bg-primary text-white px-6 py-2 rounded hover:bg-primary-dark w-full sm:w-auto"
+                                                >
+                                                    {isEdit ? 'Editar' : 'Registrar'}
+                                                </button>
+                                            </div>
+                                        </Form>
+                                    )
+                                }}
+
                             </Formik>
                         </Dialog.Panel>
                     </Transition.Child>

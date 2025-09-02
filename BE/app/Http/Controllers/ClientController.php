@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\label;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,20 @@ class ClientController extends Controller
                 return response()->json(['message' => 'No se encontraron resultados'], 404);
             }
             return response()->json($clients);
+        } catch (QueryException $e) {
+            $errorMessage = $e->getMessage();
+            return response()->json(['message' => $errorMessage], 400);
+        }
+    }
+
+    public function getLabels(){
+        try {
+            $labels = label::all();
+
+            if ($labels->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron resultados'], 404);
+            }
+            return response()->json($labels);
         } catch (QueryException $e) {
             $errorMessage = $e->getMessage();
             return response()->json(['message' => $errorMessage], 400);
@@ -128,6 +143,56 @@ class ClientController extends Controller
                 DB::commit();
 
                 return response()->json(['message' => 'Cliente actualizado correctamente', 'cliente' => $client]);
+            }
+        } catch (QueryException $e) {
+            DB::rollBack();
+            $errorMessage = $e->getMessage();
+            return response()->json(['message' => $errorMessage], 400);
+        }
+    }
+
+    public function updateLabel(Request $request, string $id){
+        try {
+
+            DB::beginTransaction();
+
+            $messages = [
+                'required' => 'El campo :attribute es requerido.',
+                'string' => 'El campo :attribute debe ser una cadena de texto.',
+                'max' => 'El campo :attribute no puede ser mayor a :max caracteres.',
+                'unique' => 'El campo :attribute ya existe en la base de datos.',
+            ];
+
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'document' => 'required|string|max:20',
+                'phone' => 'string|max:40',
+                'responsible' => 'string|max:255',
+                'address' => 'string|max:255',
+                'city' => 'string|max:100',
+            ], $messages);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors())->setStatusCode(400);
+            } else {
+                $label = label::find($id);
+
+                if (!$label) {
+                    return response()->json(['message' => 'Rotulo no encontrado'], 404);
+                }
+
+                $label->update([
+                    'name' => $request->name ?? $label->name,
+                    'document' => $request->document ?? $label->document,
+                    'phone' => $request->phone ?? $label->phone,
+                    'responsible' => $request->responsible ?? $label->responsible,
+                    'address' => $request->address ?? $label->address,
+                    'city' => $request->city ?? $label->city,
+                ]);
+
+                DB::commit();
+
+                return response()->json(['message' => 'Rotulo actualizado correctamente']);
             }
         } catch (QueryException $e) {
             DB::rollBack();

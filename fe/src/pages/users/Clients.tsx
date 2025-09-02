@@ -10,19 +10,32 @@ import { useMemo, useState } from 'react';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { ArrowCircleLeft, ArrowCircleRight, Edit, Trash } from 'iconsax-reactjs';
-import { Client, deleteClient, fetchClients } from '../../redux/clients/clientsThunk';
+import { Client, deleteClient, fetchClients, fetchLabels } from '../../redux/clients/clientsThunk';
 import AddClient from '../../Components/sections/clients/AddClient';
 import DownloadCustomerLabelButton from '../../Components/PDF/DownloadCustomerLabelButton';
+import { RootState } from '../../redux/store';
+import EditLabel from '../../Components/sections/clients/EditLabel';
 
 export default function Clients() {
     const [globalFilter, setGlobalFilter] = useState('');
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const [isOpenLabelModal, setIsOpenLabelModal] = useState(false);
+
     const [selectedClient, setSelectedClient] = useState<Client | undefined>(undefined);
 
-    const [showConfirm, setShowConfirm] = useState<{ open: boolean, id?: number }>({ open: false, id: 0 });
+    const dispatch = useAppDispatch();
+    const { clients, loading, error } = useAppSelector(state => state.clients);
 
+    const labels = useAppSelector((state: RootState) => state.clients.labels);
+
+    const data = useMemo(() => [...clients].reverse(), [clients]);
+
+    useEffect(() => {
+        dispatch(fetchClients());
+        dispatch(fetchLabels());
+    }, [dispatch]);
 
     const columns = useMemo<ColumnDef<Client>[]>(
         () => [
@@ -54,22 +67,13 @@ export default function Clients() {
                         >
                             <Trash size="30" color="#dc2626" />
                         </button> */}
-                        <DownloadCustomerLabelButton client={row.original} />
+                        <DownloadCustomerLabelButton client={row.original} label={labels?.[0]} />
                     </div>
                 ),
             },
         ],
-        []
+        [labels]
     );
-
-    const dispatch = useAppDispatch();
-    const { clients, loading, error } = useAppSelector(state => state.clients);
-
-    const data = useMemo(() => [...clients].reverse(), [clients]);
-
-    useEffect(() => {
-        dispatch(fetchClients());
-    }, [dispatch]);
 
     const table = useReactTable({
         data,
@@ -85,7 +89,7 @@ export default function Clients() {
 
     return (
         <>
-            {showConfirm.open && (
+            {/* {showConfirm.open && (
                 <div
                     className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50"
                     onClick={() => setShowConfirm({ open: false })}
@@ -119,7 +123,7 @@ export default function Clients() {
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
             {loading && <div className="text-center text-purple-600 font-medium">Cargando...</div>}
             {error && <div className="text-center text-red-500">Error: {error}</div>}
 
@@ -136,12 +140,20 @@ export default function Clients() {
                         onChange={e => setGlobalFilter(e.target.value)}
                     />
 
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary transition text-base sm:text-xl w-full sm:w-auto"
-                    >
-                        Registrar Cliente
-                    </button>
+                    <div className="flex gap-12 flex-col sm:flex-row w-full sm:w-auto">
+                        <button
+                            onClick={() => setIsOpenLabelModal(true)}
+                            className="bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary transition text-base sm:text-xl w-full sm:w-auto"
+                        >
+                            Editar Rotulo
+                        </button>
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            className="bg-primary-light text-white px-4 py-2 rounded-lg hover:bg-primary transition text-base sm:text-xl w-full sm:w-auto"
+                        >
+                            Registrar Cliente
+                        </button>
+                    </div>
                 </div>
                 {!loading && !error && (
                     <>
@@ -210,6 +222,16 @@ export default function Clients() {
                     setSelectedClient(undefined);
                 }}
                 client={selectedClient}
+            />
+            <EditLabel
+                isOpen={isOpenLabelModal}
+                onClose={() => {
+                    setIsOpenLabelModal(false);
+                }}
+                onSubmitSuccess={() => {
+                    dispatch(fetchLabels());
+                }}
+                label={labels?.[0]}
             />
         </>
     );

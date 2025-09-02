@@ -9,8 +9,7 @@ use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\UsersControllers;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,11 +28,18 @@ Route::post('login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('logout', [AuthController::class, 'logout']);
-    Route::get('/profile', fn(Request $request) => $request->user());
+
+    Route::get('/roles', function () {
+        $data = DB::table("roles")->get();
+        return response()->json($data, 200);
+    });
 
     Route::resource('users', UserController::class);
 
     Route::get('/clients/check-document', [ClientController::class, 'checkDocument']);
+    
+    Route::get('/labels', [ClientController::class, 'getLabels']);
+    Route::put('/labels/{id}', [ClientController::class, 'updateLabel']);
     Route::resource('clients', ClientController::class);
 
     Route::resource('products', ProductController::class);

@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Client, createClient, fetchClients, updateClient } from './clientsThunk';
+import { Client, createClient, fetchClients, fetchLabels, Label, updateClient } from './clientsThunk';
 
 const initialState = {
     clients: [] as Client[],
+    labels: [] as Label[],
     loading: false,
     error: null as string | null,
 };
@@ -26,6 +27,20 @@ const clientsSlice = createSlice({
                 state.error = action.payload as string;
             })
             
+            //Obtener rótulos
+            .addCase(fetchLabels.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchLabels.fulfilled, (state, action) => {
+                state.loading = false;
+                state.labels = action.payload;
+            })
+            .addCase(fetchLabels.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+
             // Crear cliente
             .addCase(createClient.pending, (state) => {
                 state.loading = true;

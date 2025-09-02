@@ -1,7 +1,11 @@
 import axios from 'axios';
 
+// La URL base para el entorno de desarrollo
+// En el entorno de producción, esta variable será reemplazada por la que configuraste en Vercel
+const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+
 const api = axios.create({
-    baseURL: 'http://localhost:8000/api',
+    baseURL: BASE_URL,
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

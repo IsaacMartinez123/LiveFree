@@ -30,9 +30,8 @@ export default function Users() {
             header: 'Rol',
             cell: ({ getValue }) => {
                 const rol = getValue() as { id: string; rol_name: string };
-                return rol.rol_name
+                return rol?.rol_name
             }
-
         },
         {
             accessorKey: 'status',

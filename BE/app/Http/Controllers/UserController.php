@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -26,6 +27,20 @@ class UserController extends Controller
             return response()->json(['message' => $errorMessage], 400);
         }
     }
+
+    // public function getRoles(){
+    //     try {
+    //         $roles = Role::select('id', 'rol_name')->get();
+
+    //         if ($roles->isEmpty()) {
+    //             return response()->json(['message' => 'No se encontraron resultados'], 404);
+    //         }
+    //         return response()->json($roles);
+    //     } catch (QueryException $e) {
+    //         $errorMessage = $e->getMessage();
+    //         return response()->json(['message' => $errorMessage], 400);
+    //     }
+    // }
 
     public function store(Request $request)
     {

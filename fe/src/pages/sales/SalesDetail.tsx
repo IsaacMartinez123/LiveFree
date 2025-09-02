@@ -7,23 +7,36 @@ interface Props {
     sale: Sales | undefined;
 }
 
+const getTotalUnits = (detail: any) => {
+    const sizes = [
+        detail.size_S,
+        detail.size_M,
+        detail.size_L,
+        detail.size_XL,
+        detail.size_2XL,
+        detail.size_3XL,
+        detail.size_4XL,
+    ];
+    return sizes.reduce((sum, qty) => sum + (Number(qty) || 0), 0);
+};
+
 export default function SalesDetail({ isOpen, onClose, sale }: Props) {
-    
+
     useEffect(() => {
         const handleEsc = (event: KeyboardEvent) => {
             if (event.key === "Escape" && isOpen) {
                 onClose();
             }
         };
-        
+
         document.addEventListener("keydown", handleEsc);
         return () => {
             document.removeEventListener("keydown", handleEsc);
         };
     }, [isOpen, onClose]);
-    
+
     if (!isOpen || !sale) return null;
-    
+
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30"
@@ -97,6 +110,7 @@ export default function SalesDetail({ isOpen, onClose, sale }: Props) {
                                         <th className="px-2 py-2 w-12">2XL</th>
                                         <th className="px-2 py-2 w-12">3XL</th>
                                         <th className="px-2 py-2 w-12">4XL</th>
+                                        <th className="px-2 py-2 w-12">Cantidad Total</th>
                                         <th className="px-4 py-2 w-24 text-left">Sub Total</th>
                                     </tr>
                                 </thead>
@@ -124,6 +138,7 @@ export default function SalesDetail({ isOpen, onClose, sale }: Props) {
                                             <td className="px-2 py-2">{detail.size_2XL}</td>
                                             <td className="px-2 py-2">{detail.size_3XL}</td>
                                             <td className="px-2 py-2">{detail.size_4XL}</td>
+                                            <td className="px-4 py-2">{getTotalUnits(detail)}</td>
                                             <td className="px-4 py-2 text-left">
                                                 ${detail.sub_total.toLocaleString()}
                                             </td>
